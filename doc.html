@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bienvenida</title>
+  <style>
+    :root{
+      --bg1: #0f172a;
+      --bg2: #0b1220;
+      --accent: #7c3aed;
+      --card: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.06);
+      --text: #e6eef8;
+    }
+
+    /* Reset y tipografía */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    /* Contenedor centrado */
+    .welcome-card{
+      width:100%;
+      max-width:920px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:20px;
+      padding:36px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:28px;
+      align-items:center;
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* Columna principal */
+    .welcome-text h1{
+      font-size:clamp(1.6rem,3.5vw,2.4rem);
+      letter-spacing: -0.02em;
+      margin-bottom:8px;
+      background: linear-gradient(90deg,var(--text), #cfe9ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .welcome-text p{
+      margin-bottom:18px;
+      color: #c9d9f2;
+      line-height:1.5;
+    }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      padding:10px 16px;
+      border-radius:12px;
+      font-weight:600;
+      cursor:pointer;
+      border:0;
+      transition: transform .15s ease, box-shadow .15s ease;
+      box-shadow: 0 6px 18px rgba(12,18,40,0.35);
+      background:linear-gradient(90deg,var(--accent), #5b21b6);
+      color:white;
+    }
+    .btn.secondary{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.06);
+      color: #d9e8ff;
+      box-shadow:none;
+      font-weight:500;
+    }
+    .btn:active{ transform:translateY(1px) }
+
+    /* Tarjeta lateral con efecto */
+    .side{
+      background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.02));
+      padding:20px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .logo{
+      display:inline-block;
+      width:54px;height:54px;border-radius:12px;
+      background: conic-gradient(from 180deg at 50% 50%, var(--accent), #4f46e5, #06b6d4);
+      box-shadow: 0 6px 20px rgba(92,66,255,0.12);
+      margin-bottom:14px;
+    }
+    .meta small{ color:#9fb3e0; display:block; margin-bottom:10px }
+
+    /* Pequeñas animaciones */
+    .pulse {
+      animation: pulse 3s ease-in-out infinite;
+      transform-origin:center;
+    }
+    @keyframes pulse{
+      0% { transform: scale(1); opacity:1 }
+      50% { transform: scale(1.03); opacity:0.95 }
+      100% { transform: scale(1); opacity:1 }
+    }
+
+    /* Responsive */
+    @media (max-width:880px){
+      .welcome-card{ grid-template-columns: 1fr; padding:26px; gap:18px; }
+      .side{ order: -1 }
+    }
+  </style>
+</head>
+<body>
+  <main class="welcome-card" role="main" aria-labelledby="bienvenida-title">
+    <section class="welcome-text">
+      <h1 id="bienvenida-title">¡Bienvenido/a a nuestra web!</h1>
+      <p>Nos alegra tenerte aquí. Explora, conoce lo que hacemos y siéntete libre de ponerte en contacto — estamos para ayudarte.</p>
+      <div class="actions" role="navigation" aria-label="Acciones principales">
+        <button class="btn" onclick="location.href='#inicio'">Empezar</button>
+        <button class="btn secondary" onclick="location.href='#contacto'">Contacto</button>
+      </div>
+    </section>
+
+    <aside class="side" aria-label="Información de bienvenida">
+      <div class="logo pulse" aria-hidden="true"></div>
+      <div class="meta">
+        <small>Rápido. Limpio. Seguro.</small>
+        <strong>Tu sitio, listo para brillar</strong>
+        <p style="margin-top:12px; color:#bfcff3; font-size:0.95rem;">
+          Aquí puedes añadir una imagen, un enlace a tus redes o información breve sobre tu proyecto.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Pequeño script para accesibilidad: focus visible en botones al tab -->
+  <script>
+    document.querySelectorAll('.btn').forEach(b=>{
+      b.addEventListener('keydown', e=>{
+        if(e.key === 'Enter' || e.key === ' '){ b.click(); e.preventDefault(); }
+      });
+    });
+  </script>
+</body>
+</html>
