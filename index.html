@@ -5,169 +5,190 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MDEI | Automatización, Robótica y Ciberseguridad</title>
   <style>
-    :root{
-      --bg1: #0f172a;
-      --bg2: #0b1220;
-      --accent: #7c3aed;
-      --accent2: #06b6d4;
-      --text: #e6eef8;
+    :root {
+      --bg1: #0c1118;
+      --bg2: #131a23;
+      --accent: #00b4d8;      /* Cian industrial */
+      --accent2: #fbbf24;     /* Ámbar técnico */
+      --steel: #94a3b8;       /* Gris metálico */
+      --text: #e2e8f0;
     }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(circle at 30% 20%, rgba(124,58,237,0.1), transparent 60%),
-                  linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; }
+    body {
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 2rem;
     }
 
-    .welcome-card{
-      width:100%;
-      max-width:960px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:20px;
-      padding:40px;
-      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
-      display:grid;
-      grid-template-columns: 1fr 340px;
-      gap:28px;
-      align-items:center;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.04);
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
     }
 
-    h1{
-      font-size:clamp(2rem,4vw,2.8rem);
-      letter-spacing:-0.03em;
-      margin-bottom:10px;
-      background:linear-gradient(90deg,var(--accent),var(--accent2));
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      font-weight:800;
+    .logo {
+      font-size: clamp(2.8rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      color: transparent;
+      text-transform: uppercase;
+      animation: shine 5s ease-in-out infinite;
     }
 
-    h2{
-      font-size:clamp(1.2rem,2vw,1.6rem);
-      color:#cfdaf9;
-      margin-bottom:18px;
-      font-weight:500;
+    @keyframes shine {
+      0%,100% { filter: drop-shadow(0 0 6px rgba(0,180,216,0.6)); }
+      50% { filter: drop-shadow(0 0 14px rgba(251,191,36,0.7)); }
     }
 
-    p{
-      color:#c9d9f2;
-      line-height:1.6;
-      margin-bottom:22px;
+    header p {
+      color: var(--steel);
+      max-width: 700px;
+      margin: 1rem auto 0;
+      line-height: 1.6;
+      font-size: 1.05rem;
     }
 
-    .actions{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
+    section {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      width: 100%;
+      max-width: 900px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      backdrop-filter: blur(6px);
     }
 
-    .btn{
-      padding:10px 18px;
-      border-radius:12px;
-      font-weight:600;
-      cursor:pointer;
-      border:0;
-      transition: transform .15s ease, box-shadow .15s ease;
-      box-shadow: 0 6px 18px rgba(12,18,40,0.35);
-      background:linear-gradient(90deg,var(--accent), #5b21b6);
-      color:white;
-    }
-    .btn.secondary{
-      background:transparent;
-      border:1px solid rgba(255,255,255,0.06);
-      color:#d9e8ff;
-      box-shadow:none;
-      font-weight:500;
-    }
-    .btn:hover{ transform:translateY(-2px); }
-    .btn:active{ transform:translateY(1px); }
-
-    .side{
-      background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.015));
-      padding:22px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,0.03);
-      text-align:center;
+    section h2 {
+      font-size: 1.6rem;
+      color: var(--accent);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
     }
 
-    .logo{
-      width:72px;
-      height:72px;
-      border-radius:16px;
-      background: conic-gradient(from 180deg at 50% 50%, var(--accent), #4f46e5, var(--accent2));
-      box-shadow:0 8px 24px rgba(92,66,255,0.15);
-      margin:0 auto 18px;
-      animation:spin 8s linear infinite;
+    section p {
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 1rem;
     }
 
-    @keyframes spin{
-      0%{transform:rotate(0deg);}
-      100%{transform:rotate(360deg);}
+    .areas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1.2rem;
     }
 
-    .side strong{
-      display:block;
-      color:#cfe9ff;
-      margin-bottom:8px;
-      font-size:1.1rem;
+    .area {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 1rem 1.4rem;
+      border-left: 4px solid var(--accent);
+      transition: transform 0.2s ease, border-color 0.3s ease;
     }
 
-    .side p{
-      color:#bfcff3;
-      font-size:0.95rem;
-      line-height:1.5;
+    .area:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent2);
     }
 
-    @media (max-width:880px){
-      .welcome-card{grid-template-columns:1fr;padding:28px;gap:18px;}
-      .side{order:-1;}
+    .area h3 {
+      color: var(--accent);
+      margin-bottom: 0.5rem;
     }
+
+    .area p {
+      color: var(--steel);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding-top: 1rem;
+      color: var(--steel);
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .btn {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border: none;
+      padding: 0.8rem 1.6rem;
+      border-radius: 10px;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
   </style>
 </head>
 <body>
-  <main class="welcome-card" role="main" aria-labelledby="empresa-title">
-    <section>
-      <h1 id="empresa-title">MDEI</h1>
-      <h2>Automatización Electromecánica, Robótica y Ciberseguridad</h2>
-      <p>
-        En <strong>MDEI</strong> impulsamos la transformación tecnológica a través de soluciones integrales
-        de automatización, ingeniería electromecánica, robótica avanzada y protección cibernética.  
-        Nos especializamos en diseñar sistemas inteligentes y seguros que optimizan procesos industriales,
-        incrementan la eficiencia y fortalecen la seguridad digital de las organizaciones.
-      </p>
+  <header>
+    <div class="logo">MDEI</div>
+    <p>Innovación industrial enfocada en <strong>automatización electromecánica</strong>, 
+      <strong>robótica avanzada</strong> y <strong>ciberseguridad</strong>.  
+      Impulsamos la eficiencia, precisión y protección digital en entornos industriales.</p>
+  </header>
 
-      <div class="actions">
-        <button class="btn" onclick="location.href='#servicios'">Nuestros servicios</button>
-        <button class="btn secondary" onclick="location.href='#contacto'">Contáctanos</button>
+  <section id="nosotros">
+    <h2>Quiénes Somos</h2>
+    <p>
+      En <strong>MDEI</strong> somos un equipo de ingenieros, técnicos y especialistas apasionados por la 
+      tecnología y la innovación. Nuestra misión es integrar sistemas inteligentes y seguros que optimicen 
+      procesos, reduzcan riesgos y potencien la productividad de la industria moderna.
+    </p>
+    <p>
+      Trabajamos con empresas manufactureras, energéticas y tecnológicas que buscan automatizar sus 
+      operaciones y proteger su infraestructura digital con soluciones robustas y escalables.
+    </p>
+  </section>
+
+  <section id="areas">
+    <h2>Áreas de Especialización</h2>
+    <div class="areas">
+      <div class="area">
+        <h3>Automatización Electromecánica</h3>
+        <p>Diseño e implementación de sistemas de control industrial, PLCs, sensores, actuadores y 
+        tableros eléctricos inteligentes. Optimizamos procesos para mayor precisión y ahorro energético.</p>
       </div>
-    </section>
+      <div class="area">
+        <h3>Robótica Avanzada</h3>
+        <p>Desarrollo e integración de robots industriales y colaborativos (cobots), con sistemas 
+        de visión artificial y control adaptativo para líneas de producción inteligentes.</p>
+      </div>
+      <div class="area">
+        <h3>Ciberseguridad Industrial</h3>
+        <p>Protección de infraestructuras críticas y redes OT mediante auditorías, firewalls industriales,
+        segmentación segura y monitoreo de amenazas digitales.</p>
+      </div>
+    </div>
+  </section>
 
-    <aside class="side" aria-label="Identidad de la empresa">
-      <div class="logo" aria-hidden="true"></div>
-      <strong>Innovación + Seguridad + Precisión</strong>
-      <p>Automatizamos el futuro con inteligencia y confianza.  
-      Expertos en integración de sistemas, robótica colaborativa y ciberdefensa industrial.</p>
-    </aside>
-  </main>
+  <section id="contacto">
+    <h2>Contacto</h2>
+    <p>¿Listo para modernizar tus sistemas? Ponte en contacto con nuestro equipo técnico:</p>
+    <p><strong>Email:</strong> contacto@mdei.com<br>
+       <strong>Teléfono:</strong> +34 600 123 456<br>
+       <strong>Ubicación:</strong> Madrid, España</p>
+    <button class="btn" onclick="alert('Gracias por tu interés. Pronto te contactaremos.')">Solicitar información</button>
+  </section>
 
-  <script>
-    // Accesibilidad básica para activar botones con teclado
-    document.querySelectorAll('.btn').forEach(b=>{
-      b.addEventListener('keydown', e=>{
-        if(e.key === 'Enter' || e.key === ' '){ b.click(); e.preventDefault(); }
-      });
-    });
-  </script>
+  <footer>
+    © 2025 MDEI — Innovación Industrial Segura. Todos los derechos reservados.
+  </footer>
 </body>
 </html>
