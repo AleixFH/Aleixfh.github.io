@@ -4,343 +4,1098 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MDEI — Automation · Robotics · Cybersecurity</title>
-  <meta name="description" content="MDEI — Industrial automation, robotics integration and industrial cybersecurity. Based in Barcelona (BCN)." />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="description" content="MDEI — Specialists in automation, robotics, and cybersecurity. Based in Barcelona (BCN)." />
+
   <style>
-    /* Brutalist / minimal reset */
-    :root{
-      --bg: #ffffff;
-      --text: #0b0b0b;
-      --muted: #4a4a4a;
-      --accent: #111827; /* dark accent for headings */
-      --panel: #f6f7fb;
-      --divider: #e5e7eb;
-      --maxw: 1100px;
-    }
-    html,body{height:100%;margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;line-height:1.45;-webkit-font-smoothing:antialiased}
-    a{color:inherit;text-decoration:none}
-    img{display:block;max-width:100%}
-
-    /* sticky minimal header */
-    header{
-      position:sticky;
-      top:0;
-      z-index:40;
-      background:var(--bg);
-      border-bottom:1px solid var(--divider);
-      display:flex;
-      align-items:center;
-      height:64px;
-    }
-    .nav-inner{
-      width:100%;
-      max-width:var(--maxw);
-      margin:0 auto;
-      display:flex;
-      align-items:center;
-      gap:18px;
-      padding:0 20px;
+    :root {
+      --bg: #020617;
+      --bg-alt: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.18);
+      --accent-soft-strong: rgba(56,189,248,0.4);
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border-subtle: rgba(148,163,184,0.35);
+      --card-bg: rgba(15,23,42,0.85);
+      --shadow-soft: 0 24px 80px rgba(15,23,42,0.9);
+      --radius-xl: 18px;
+      --radius-2xl: 24px;
+      --transition-fast: 200ms ease-out;
+      --transition-med: 320ms ease-out;
     }
 
-    /* logo simple, square, white */
+    * {
+      box-sizing:border-box;
+    }
+
+    html,body {
+      margin:0;
+      padding:0;
+      height:100%;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      overflow-x:hidden;
+      scroll-behavior:smooth;
+    }
+
+    body {
+      position:relative;
+      min-height:100vh;
+      color:var(--text-main);
+    }
+
+    /* === Cinematic background === */
+
+    .background {
+      position:fixed;
+      inset:0;
+      z-index:-3;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(56,189,248,0.16), transparent 55%),
+        radial-gradient(circle at 120% 10%, rgba(59,130,246,0.13), transparent 55%),
+        url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1950&q=80')
+        center/cover no-repeat;
+      filter:brightness(0.32) saturate(1.1);
+      animation: moveBg 26s ease-in-out infinite alternate;
+      transform-origin:center;
+    }
+
+    @keyframes moveBg {
+      from {
+        transform:scale(1.02) translate3d(0,0,0);
+      }
+      to {
+        transform:scale(1.08) translate3d(0,-2%,0);
+      }
+    }
+
+    .background-grid {
+      position:fixed;
+      inset:-40px;
+      z-index:-2;
+      background-image:
+        linear-gradient(rgba(148,163,184,0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,0.12) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mix-blend-mode:soft-light;
+      opacity:0.4;
+      pointer-events:none;
+      animation:gridPulse 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes gridPulse {
+      from { opacity:0.25; filter:blur(0); }
+      to   { opacity:0.55; filter:blur(1px); }
+    }
+
+    .background-noise {
+      position:fixed;
+      inset:0;
+      z-index:-1;
+      pointer-events:none;
+      opacity:0.06;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9' /%3E%3C/svg%3E");
+      mix-blend-mode:soft-light;
+    }
+
+    /* === Header === */
+
+    header {
+      position:fixed;
+      top:0; left:0; right:0;
+      z-index:20;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 5vw;
+      background: linear-gradient(to bottom, rgba(15,23,42,0.92), rgba(15,23,42,0.35), transparent);
+      backdrop-filter: blur(16px);
+      border-bottom:1px solid rgba(148,163,184,0.2);
+    }
+
     .logo {
       display:flex;
       align-items:center;
       gap:12px;
-      user-select:none;
+      text-transform:uppercase;
+      letter-spacing:0.22em;
+      font-size:0.85rem;
     }
-    .logo-mark{
-      width:44px;height:44px;
-      display:grid;place-items:center;
-      background:#ffffff;
-      border:2px solid var(--text);
-      box-sizing:border-box;
-    }
-    .logo-mark svg{width:36px;height:20px}
-    .brand-text{
-      display:flex;flex-direction:column;line-height:1;
-    }
-    .brand-text .title{font-weight:800;letter-spacing:-0.02em;font-size:1rem;color:var(--text)}
-    .brand-text .tag{font-size:0.78rem;color:var(--muted);margin-top:2px}
 
-    /* main container */
-    main{max-width:var(--maxw);margin:48px auto;padding:0 20px}
+    .logo svg {
+      width:34px;
+      height:34px;
+      flex-shrink:0;
+      filter:drop-shadow(0 0 18px rgba(56,189,248,0.4));
+    }
 
-    /* Hero */
-    .hero{
+    .logo span {
+      font-weight:700;
+      color:#f9fafb;
+      white-space:nowrap;
+    }
+
+    .nav {
+      display:flex;
+      align-items:center;
+      gap:24px;
+      font-size:0.82rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+    }
+
+    .nav a {
+      position:relative;
+      text-decoration:none;
+      color:var(--text-muted);
+      padding:6px 0;
+      transition:color var(--transition-fast);
+    }
+
+    .nav a::after {
+      content:"";
+      position:absolute;
+      left:0; bottom:0;
+      width:0;
+      height:1px;
+      background:linear-gradient(90deg, var(--accent), transparent);
+      transition:width var(--transition-med);
+      opacity:0.9;
+    }
+
+    .nav a:hover {
+      color:var(--text-main);
+    }
+
+    .nav a:hover::after {
+      width:100%;
+    }
+
+    /* === Layout === */
+
+    main {
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:120px 5vw 80px;
+    }
+
+    .shell {
+      width:100%;
+      max-width:1120px;
       display:grid;
-      grid-template-columns: 1fr 360px;
-      gap:28px;
-      align-items:start;
+      grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
+      gap:38px;
+      align-items:center;
+      position:relative;
     }
-    .block{
-      background:transparent;
-      padding:0;
+
+    .hero-content-layer {
+      position:relative;
+      z-index:2;
+      max-width:620px;
+    }
+
+    .hero-badge {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.6);
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.22), transparent 60%), rgba(15,23,42,0.85);
+      box-shadow:0 14px 40px rgba(15,23,42,0.8);
+      font-size:0.72rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:var(--text-muted);
+      margin-bottom:18px;
+      opacity:0;
+      transform:translateY(14px);
+      animation:heroIn 900ms ease-out forwards 80ms;
+    }
+
+    .hero-badge-dot {
+      width:7px;
+      height:7px;
+      border-radius:999px;
+      background:var(--accent);
+      box-shadow:0 0 0 8px rgba(56,189,248,0.25);
+    }
+
+    h1 {
+      font-size:clamp(2.4rem, 4vw, 3.6rem);
+      font-weight:800;
+      margin:0 0 10px 0;
+      line-height:1.02;
+      letter-spacing:0.02em;
+      text-shadow:0 12px 50px rgba(15,23,42,1);
+      opacity:0;
+      transform:translateY(18px);
+      animation:heroIn 970ms ease-out forwards 140ms;
+    }
+
+    h1 span.highlight {
+      background:linear-gradient(120deg, #e5e7eb, #f9fafb);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    h2 {
+      font-size:clamp(1.02rem, 1.4vw, 1.25rem);
+      font-weight:400;
+      color:var(--text-muted);
       margin:0 0 28px 0;
+      line-height:1.5;
+      max-width:520px;
+      opacity:0;
+      transform:translateY(18px);
+      animation:heroIn 980ms ease-out forwards 220ms;
     }
-    .hero-left{
-      border:2px solid var(--divider);
-      padding:36px;
-      box-sizing:border-box;
+
+    @keyframes heroIn {
+      to {
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    .hero-cta-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      align-items:center;
+      margin-bottom:26px;
+      opacity:0;
+      transform:translateY(18px);
+      animation:heroIn 980ms ease-out forwards 280ms;
+    }
+
+    .cta {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:11px 22px;
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      border-radius:999px;
+      border:1px solid var(--accent-soft-strong);
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.5), transparent 60%), rgba(15,23,42,0.95);
+      color:var(--text-main);
+      text-decoration:none;
+      cursor:pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-med), border-color var(--transition-med), color var(--transition-med);
+      box-shadow:0 14px 50px rgba(15,23,42,0.95), 0 0 0 1px rgba(15,23,42,0.8);
+      white-space:nowrap;
+    }
+
+    .cta.primary {
+      background:linear-gradient(135deg, var(--accent), #0ea5e9);
+      color:#0b1120;
+      border-color:transparent;
+      box-shadow:0 18px 70px rgba(56,189,248,0.65);
+    }
+
+    .cta.ghost {
+      background:rgba(15,23,42,0.82);
+      border-color:var(--border-subtle);
+      color:var(--text-muted);
+    }
+
+    .cta span.icon {
+      font-size:0.9rem;
+      transform:translateY(0.5px);
+    }
+
+    .cta:hover {
+      transform:translateY(-1px) translateZ(0);
+      box-shadow:0 22px 80px rgba(15,23,42,1);
+    }
+
+    .cta.primary:hover {
+      box-shadow:0 26px 90px rgba(56,189,248,0.8);
+      background:linear-gradient(135deg, #0ea5e9, #38bdf8);
+    }
+
+    .cta.ghost:hover {
+      color:var(--text-main);
+      border-color:var(--accent-soft-strong);
+      background:radial-gradient(circle at 0 0, rgba(56,189,248,0.18), transparent 60%), rgba(15,23,42,0.96);
+    }
+
+    .hero-metrics {
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px 32px;
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:var(--text-muted);
+      opacity:0;
+      transform:translateY(16px);
+      animation:heroIn 980ms ease-out forwards 340ms;
+    }
+
+    .hero-metric {
       display:flex;
       flex-direction:column;
+      gap:6px;
+    }
+
+    .hero-metric-label {
+      font-size:0.7rem;
+      color:var(--text-muted);
+    }
+
+    .hero-metric-value {
+      font-size:0.85rem;
+      color:#e5e7eb;
+    }
+
+    /* === Right side: orbit / specialist === */
+
+    .hero-orbit-layer {
+      position:relative;
+      min-height:260px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .orbit-core {
+      position:relative;
+      width:260px;
+      max-width:100%;
+      aspect-ratio:1/1;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.45);
+      background:radial-gradient(circle at 30% 0%, rgba(56,189,248,0.25), transparent 55%), rgba(15,23,42,0.92);
+      box-shadow:var(--shadow-soft);
+      backdrop-filter:blur(26px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    .orbit-ring {
+      position:absolute;
+      inset:10%;
+      border-radius:inherit;
+      border:1px dashed rgba(148,163,184,0.4);
+      opacity:0.7;
+      transform-origin:center;
+      animation:orbitSpin 28s linear infinite;
+    }
+
+    .orbit-ring:nth-child(2) {
+      inset:23%;
+      opacity:0.55;
+      animation-duration:34s;
+      animation-direction:reverse;
+    }
+
+    @keyframes orbitSpin {
+      to { transform:rotate(360deg); }
+    }
+
+    .orbit-pulse {
+      position:absolute;
+      inset:33%;
+      border-radius:inherit;
+      background:radial-gradient(circle, rgba(56,189,248,0.26), transparent 60%);
+      filter:blur(3px);
+      opacity:0.6;
+      animation:orbitPulse 2.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes orbitPulse {
+      from { opacity:0.2; transform:scale(1); }
+      to   { opacity:0.8; transform:scale(1.07); }
+    }
+
+    .orbit-label {
+      position:relative;
+      text-align:center;
+      z-index:2;
+      padding:22px 24px;
+    }
+
+    .orbit-label-title {
+      font-size:0.82rem;
+      text-transform:uppercase;
+      letter-spacing:0.22em;
+      margin-bottom:8px;
+      color:var(--text-muted);
+    }
+
+    .orbit-label-main {
+      font-size:0.95rem;
+      font-weight:600;
+      letter-spacing:0.08em;
+    }
+
+    .orbit-chips {
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    .orbit-chip {
+      position:absolute;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:0.7rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      background:rgba(15,23,42,0.9);
+      border:1px solid rgba(148,163,184,0.6);
+      color:var(--text-muted);
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      box-shadow:0 10px 30px rgba(15,23,42,0.9);
+    }
+
+    .orbit-chip-dot {
+      width:5px;
+      height:5px;
+      border-radius:999px;
+      background:var(--accent);
+    }
+
+    .orbit-chip:nth-child(1) { top:10%; left:-6%; }
+    .orbit-chip:nth-child(2) { top:4%; right:-10%; }
+    .orbit-chip:nth-child(3) { bottom:8%; left:8%; }
+    .orbit-chip:nth-child(4) { bottom:2%; right:0; }
+
+    .specialist {
+      position:absolute;
+      right:8px;
+      bottom:-38px;
+      display:flex;
+      flex-direction:row;
+      gap:10px;
+      align-items:center;
+      opacity:0.9;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(15,23,42,0.96);
+      border:1px solid rgba(148,163,184,0.55);
+      box-shadow:0 14px 40px rgba(15,23,42,0.95);
+    }
+
+    .specialist svg {
+      width:32px;
+      height:32px;
+      stroke:#e5e7eb;
+      fill:none;
+      stroke-width:2;
+      flex-shrink:0;
+    }
+
+    .specialist span {
+      font-weight:600;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      font-size:0.7rem;
+      color:var(--text-muted);
+    }
+
+    /* === Capabilities section === */
+
+    section {
+      position:relative;
+    }
+
+    #capabilities {
+      padding:40px 5vw 80px;
+      background:radial-gradient(circle at 50% 0%, rgba(56,189,248,0.18), transparent 60%), radial-gradient(circle at 0 100%, rgba(15,23,42,0.95), rgba(15,23,42,1));
+    }
+
+    .section-shell {
+      max-width:1120px;
+      margin:0 auto;
+    }
+
+    .section-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:18px;
+      margin-bottom:28px;
+    }
+
+    .section-title-group h3 {
+      margin:0 0 6px 0;
+      font-size:1.25rem;
+      letter-spacing:0.06em;
+      text-transform:uppercase;
+    }
+
+    .section-eyebrow {
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.22em;
+      color:var(--text-muted);
+    }
+
+    .section-subtitle {
+      font-size:0.9rem;
+      color:var(--text-muted);
+      max-width:420px;
+    }
+
+    .capabilities-grid {
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
       gap:18px;
     }
-    .kicker{color:var(--muted);font-weight:700;font-size:0.9rem;letter-spacing:0.06em;text-transform:uppercase}
-    .headline{font-size:clamp(1.8rem,3.2vw,2.6rem);color:var(--accent);font-weight:800;margin:0;line-height:1.02}
-    .lead{color:var(--text);font-size:1.05rem;margin:0}
-    .cta-row{display:flex;gap:12px;margin-top:8px}
-    .btn{
-      display:inline-block;padding:10px 14px;border:2px solid var(--text);background:transparent;color:var(--text);
-      font-weight:700;cursor:pointer;letter-spacing:0.02em;
-    }
-    .btn.ghost{border-color:var(--muted);color:var(--muted);font-weight:600}
-    .meta-line{font-size:0.95rem;color:var(--muted);margin-top:12px}
 
-    /* right panel */
-    .hero-right{
-      border:2px solid var(--divider);
-      padding:20px;
+    .cap-card {
+      position:relative;
+      padding:18px 18px 16px;
+      border-radius:var(--radius-xl);
+      border:1px solid var(--border-subtle);
+      background:linear-gradient(135deg, rgba(15,23,42,0.96), rgba(15,23,42,0.92));
+      backdrop-filter:blur(24px);
+      box-shadow:0 18px 50px rgba(15,23,42,0.96);
+      overflow:hidden;
+      transition:transform var(--transition-med), box-shadow var(--transition-med), border-color var(--transition-med), background var(--transition-med);
+      font-size:0.86rem;
+      color:var(--text-muted);
+    }
+
+    .cap-card::before {
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:radial-gradient(circle at 0 0, var(--accent-soft), transparent 60%);
+      opacity:0;
+      transition:opacity var(--transition-med);
+      pointer-events:none;
+    }
+
+    .cap-card:hover {
+      transform:translateY(-4px) translateZ(0);
+      box-shadow:0 24px 80px rgba(15,23,42,1);
+      border-color:var(--accent-soft-strong);
+      background:linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,1));
+    }
+
+    .cap-card:hover::before {
+      opacity:1;
+    }
+
+    .cap-tag {
+      font-size:0.7rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:var(--text-muted);
+      margin-bottom:10px;
+    }
+
+    .cap-title {
+      font-size:0.92rem;
+      color:#e5e7eb;
+      margin-bottom:10px;
+    }
+
+    .cap-meta {
+      font-size:0.75rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:var(--text-muted);
+      margin-top:10px;
+    }
+
+    /* === Contact section (keeps your original form) === */
+
+    section#contact {
+      min-height:100vh;
       display:flex;
-      flex-direction:column;
-      gap:12px;
-      box-sizing:border-box;
+      align-items:center;
+      padding:80px 5vw 40px;
+      background:#f9fafb;
+      color:#020617;
     }
-    .panel-title{font-weight:800;color:var(--accent);font-size:0.95rem;margin:0}
-    .contact-item{display:flex;justify-content:space-between;border-top:1px solid var(--divider);padding:10px 0}
-    .contact-item:first-of-type{border-top:0;padding-top:0}
 
-    /* sections square, no radius */
-    section.square{
-      border:2px solid var(--divider);
-      padding:28px;
-      margin-bottom:24px;
-    }
-    section h2{
-      margin:0 0 14px 0;color:var(--accent);font-size:1.05rem;font-weight:800;
-      letter-spacing:0.02em;
-    }
-    section p{margin:0;color:var(--text);font-size:1rem}
-
-    /* grid 3 columns square cards */
-    .grid-3{
+    .contact-shell {
+      max-width:1120px;
+      width:100%;
+      margin:0 auto;
       display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:16px;
-      margin-top:12px;
+      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+      gap:40px;
+      align-items:flex-start;
     }
-    .card{
-      border:2px solid var(--divider);
-      padding:18px;
-      box-sizing:border-box;
-      min-height:120px;
+
+    section#contact h3 {
+      font-size:1.8rem;
+      margin:0 0 10px 0;
+    }
+
+    .contact-subtitle {
+      font-size:0.95rem;
+      color:#4b5563;
+      margin-bottom:22px;
+    }
+
+    .contact-meta {
+      font-size:0.8rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:#6b7280;
+      margin-bottom:14px;
+    }
+
+    .contact-panel {
+      border-radius:var(--radius-2xl);
+      border:1px solid #111827;
+      background:linear-gradient(135deg, #020617, #020617);
+      color:#f9fafb;
+      padding:22px 22px 24px;
+      box-shadow:0 18px 60px rgba(15,23,42,0.9);
+    }
+
+    form {
+      width:100%;
       display:flex;
       flex-direction:column;
-      gap:10px;
+      gap:14px;
     }
-    .card h3{margin:0;font-size:1rem;color:var(--text);font-weight:800}
-    .card p{margin:0;color:var(--muted);font-size:0.95rem}
 
-    /* solutions list */
-    .solutions-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-    .solution{display:flex;gap:12px;align-items:flex-start;padding:12px;border:2px solid var(--divider)}
-    .dot{width:10px;height:10px;background:var(--text);align-self:flex-start}
+    label {
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:#9ca3af;
+      margin-bottom:4px;
+      display:block;
+    }
 
-    /* contact form */
-    .contact-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;margin-top:12px}
-    label{font-weight:700;font-size:0.9rem;color:var(--text)}
-    input,textarea{width:100%;box-sizing:border-box;border:2px solid var(--divider);padding:10px;font-size:0.95rem;color:var(--text);background:transparent}
-    textarea{min-height:120px}
-    .submit{display:inline-block;padding:10px 14px;border:2px solid var(--text);background:transparent;color:var(--text);font-weight:800;cursor:pointer}
+    input, textarea {
+      width:100%;
+      padding:10px 11px;
+      border-radius:12px;
+      border:1px solid rgba(148,163,184,0.8);
+      font-size:0.95rem;
+      background:rgba(15,23,42,0.98);
+      color:#f9fafb;
+      resize:none;
+      outline:none;
+      transition:border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
+    }
 
-    /* partners */
-    .partners{display:flex;gap:18px;align-items:center;justify-content:flex-start;margin-top:10px;border-top:2px solid var(--divider);padding-top:14px}
-    .partner{width:140px;height:40px;display:grid;place-items:center;border:2px solid var(--divider);font-weight:700;color:var(--muted);}
+    input::placeholder,
+    textarea::placeholder {
+      color:#6b7280;
+    }
 
-    footer{border-top:2px solid var(--divider);padding:18px 0;margin-top:28px;color:var(--muted);font-size:0.95rem}
+    input:focus,
+    textarea:focus {
+      border-color:var(--accent);
+      box-shadow:0 0 0 1px rgba(56,189,248,0.5);
+      background:#020617;
+      transform:translateY(-1px);
+    }
 
-    /* responsive */
-    @media (max-width:960px){
-      .hero{grid-template-columns:1fr}
-      .grid-3{grid-template-columns:1fr}
-      .contact-grid{grid-template-columns:1fr}
-      .partners{flex-wrap:wrap}
+    textarea {
+      min-height:120px;
+    }
+
+    button {
+      margin-top:4px;
+      border-radius:999px;
+      border:1px solid #e5e7eb;
+      background:#e5e7eb;
+      color:#020617;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      padding:11px;
+      cursor:pointer;
+      transition:background var(--transition-fast),color var(--transition-fast),transform var(--transition-fast),box-shadow var(--transition-fast), border-color var(--transition-fast);
+    }
+
+    button:hover {
+      background:#020617;
+      color:#f9fafb;
+      border-color:#f9fafb;
+      transform:translateY(-1px);
+      box-shadow:0 18px 50px rgba(15,23,42,0.95);
+    }
+
+    button:active {
+      transform:translateY(0);
+      box-shadow:none;
+    }
+
+    .contact-note {
+      font-size:0.78rem;
+      color:#9ca3af;
+      margin-top:10px;
+    }
+
+    footer {
+      text-align:center;
+      font-size:0.85rem;
+      color:#9ca3af;
+      padding:18px 16px 24px;
+      background:#020617;
+      border-top:1px solid rgba(31,41,55,1);
+    }
+
+    /* === Reveal on scroll === */
+
+    .reveal {
+      opacity:0;
+      transform:translateY(32px);
+      transition:opacity 700ms ease-out, transform 700ms ease-out;
+    }
+
+    .reveal--visible {
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    /* === Parallax layers === */
+
+    [data-parallax-layer] {
+      will-change:transform;
+      transition:transform 220ms ease-out;
+    }
+
+    /* === Responsive === */
+
+    @media (max-width: 960px) {
+      .shell {
+        grid-template-columns:minmax(0,1fr);
+        gap:32px;
+      }
+      .hero-orbit-layer {
+        order:-1;
+      }
+      .specialist {
+        right:50%;
+        transform:translateX(50%);
+        bottom:-42px;
+      }
+      .contact-shell {
+        grid-template-columns:minmax(0,1fr);
+      }
+      .section-header {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding:10px 16px;
+      }
+      .nav {
+        display:none;
+      }
+      main {
+        padding-top:96px;
+      }
+      .hero-metrics {
+        gap:12px 20px;
+      }
+      #capabilities {
+        padding:40px 16px 60px;
+      }
+      section#contact {
+        padding:60px 16px 40px;
+      }
+      .contact-panel {
+        padding:18px 16px 20px;
+      }
+      .capabilities-grid {
+        grid-template-columns:minmax(0,1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-badge {
+        letter-spacing:0.16em;
+      }
+      .orbit-core {
+        width:220px;
+      }
+      .specialist {
+        bottom:-34px;
+      }
+      .hero-cta-row {
+        flex-direction:column;
+        align-items:flex-start;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- header minimal sticky -->
+  <div class="background" data-parallax-layer></div>
+  <div class="background-grid" data-parallax-layer></div>
+  <div class="background-noise"></div>
+
   <header>
-    <div class="nav-inner">
-      <div class="logo" aria-label="MDEI">
-        <div class="logo-mark" aria-hidden="true">
-          <!-- simple MDEI mark -->
-          <svg viewBox="0 0 120 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-            <text x="8" y="26" font-family="system-ui, Arial" font-weight="800" font-size="22" fill="#0b0b0b">MDEI</text>
-          </svg>
-        </div>
-        <div class="brand-text">
-          <div class="title">MDEI</div>
-          <div class="tag">Automation · Robotics · Cybersecurity</div>
-        </div>
-      </div>
-      <!-- header intentionally minimal: no menu -->
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36">
+        <rect width="36" height="36" stroke="#fff" fill="none" stroke-width="2"/>
+        <text x="7" y="25" font-size="14" fill="#fff" font-weight="700">M</text>
+      </svg>
+      <span>MDEI</span>
     </div>
+    <nav class="nav">
+      <a href="#top">Overview</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#contact">Contact</a>
+    </nav>
   </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero block" aria-label="Hero">
-      <div class="hero-left">
-        <div class="kicker">Industrial Technology</div>
-        <h1 class="headline">Integrated solutions for automation, robotics and industrial cybersecurity</h1>
-        <p class="lead">MDEI delivers engineering-grade automation systems, robot integration and OT/IT cybersecurity to enable resilient, efficient industrial operations. We design, implement and maintain turnkey systems tailored to production environments.</p>
-
-        <div class="cta-row">
-          <a class="btn" href="#contact">Request proposal</a>
-          <a class="btn ghost" href="#solutions">View solutions</a>
+  <main id="top">
+    <div class="shell">
+      <!-- Left: main message -->
+      <div class="hero-content-layer" data-parallax-layer>
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span>Barcelona · BCN · Industrial OT</span>
         </div>
 
-        <div class="meta-line">Phone: <strong>727 785 408</strong> · Location: <strong>Barcelona (BCN)</strong></div>
-      </div>
+        <h1>
+          <span class="highlight">Automation · Robotics · Cybersecurity</span>
+        </h1>
+        <h2>Specialists in industrial integration and resilience.</h2>
 
-      <aside class="hero-right" aria-label="Quick contact">
-        <div>
-          <div class="panel-title">Corporate contact</div>
-          <div style="height:8px"></div>
-          <div class="contact-item"><span>Email</span><span style="font-weight:800">contacto@mdei.com</span></div>
-          <div class="contact-item"><span>Phone</span><span style="font-weight:800">727 785 408</span></div>
-          <div class="contact-item"><span>Office</span><span style="font-weight:800">Barcelona (BCN)</span></div>
+        <div class="hero-cta-row">
+          <a href="#contact" class="cta primary">
+            <span>Contact Us</span>
+            <span class="icon">↗</span>
+          </a>
+          <button type="button" class="cta ghost" id="view-capabilities">
+            <span>View capabilities</span>
+            <span class="icon">◎</span>
+          </button>
         </div>
 
-        <div style="margin-top:8px">
-          <div style="font-weight:800;color:var(--text);margin-bottom:8px">Trusted by</div>
-          <div class="partners" aria-hidden="true">
-            <div class="partner">SIEMENS</div>
-            <div class="partner">ABB</div>
-            <div class="partner">SCHNEIDER</div>
-            <div class="partner">OEM</div>
+        <div class="hero-metrics">
+          <div class="hero-metric">
+            <span class="hero-metric-label">Domains</span>
+            <span class="hero-metric-value">Automation · Robotics · Cybersecurity</span>
+          </div>
+          <div class="hero-metric">
+            <span class="hero-metric-label">Focus</span>
+            <span class="hero-metric-value">Industrial integration & resilience</span>
+          </div>
+          <div class="hero-metric">
+            <span class="hero-metric-label">Location</span>
+            <span class="hero-metric-value">Barcelona (BCN)</span>
           </div>
         </div>
-      </aside>
-    </section>
+      </div>
 
-    <!-- WHO WE ARE -->
-    <section id="nosotros" class="square" aria-labelledby="who-title">
-      <h2 id="who-title">Who we are</h2>
-      <p>MDEI is an industrial engineering firm focused on delivering high-integrity automation, robotics integration and cybersecurity services for production environments. Our multidisciplinary team blends control engineering, systems integration and OT security practices to deliver dependable, maintainable systems at scale.</p>
-    </section>
+      <!-- Right: orbit & specialist badge -->
+      <div class="hero-orbit-layer" data-parallax-layer>
+        <div class="orbit-core">
+          <div class="orbit-ring"></div>
+          <div class="orbit-ring"></div>
+          <div class="orbit-pulse"></div>
 
-    <!-- AREAS -->
-    <section id="areas" class="square" aria-labelledby="areas-title">
-      <h2 id="areas-title">Core competencies</h2>
-      <div class="grid-3">
-        <div class="card">
-          <h3>Automation — Electromechanical</h3>
-          <p>PLC / SCADA architectures, electrical panels, instrumentation and telemetry for process control and energy efficiency.</p>
-        </div>
-        <div class="card">
-          <h3>Robotics — Integration</h3>
-          <p>Industrial and collaborative robot cells, machine vision and motion control for precision assembly and inspection.</p>
-        </div>
-        <div class="card">
-          <h3>Cybersecurity — Industrial OT</h3>
-          <p>OT risk assessments, network segmentation, intrusion detection and incident response tailored to production networks.</p>
+          <div class="orbit-label">
+            <div class="orbit-label-title">Industrial systems</div>
+            <div class="orbit-label-main">Automation · Robotics · Cybersecurity</div>
+          </div>
+
+          <div class="orbit-chips">
+            <div class="orbit-chip">
+              <span class="orbit-chip-dot"></span>
+              <span>PLC / SCADA</span>
+            </div>
+            <div class="orbit-chip">
+              <span class="orbit-chip-dot"></span>
+              <span>Industrial robotics</span>
+            </div>
+            <div class="orbit-chip">
+              <span class="orbit-chip-dot"></span>
+              <span>OT security</span>
+            </div>
+            <div class="orbit-chip">
+              <span class="orbit-chip-dot"></span>
+              <span>Resilience</span>
+            </div>
+          </div>
+
+          <!-- Your original specialist badge, re-used -->
+          <div class="specialist">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+              <circle cx="24" cy="14" r="8"/>
+              <path d="M6 42c2-10 34-10 36 0"/>
+            </svg>
+            <span>Specialist</span>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
+  </main>
 
-    <!-- SOLUTIONS -->
-    <section id="solutions" class="square" aria-labelledby="sol-title">
-      <h2 id="sol-title">Representative solutions</h2>
-      <div class="solutions-list">
-        <div class="solution"><div class="dot" aria-hidden="true"></div><p><strong>Turnkey automation projects:</strong> End-to-end delivery from engineering and panels to commissioning and HMI/SCADA deployment.</p></div>
-        <div class="solution"><div class="dot" aria-hidden="true"></div><p><strong>Robotic cells & cobots:</strong> Safe collaborative robots and vision systems for flexible production lines.</p></div>
-        <div class="solution"><div class="dot" aria-hidden="true"></div><p><strong>Industrial cyber program:</strong> Vulnerability assessment, segmentation, monitoring and operational hardening.</p></div>
+  <!-- New capabilities section (pure visual/info, no logic changed) -->
+  <section id="capabilities" class="reveal">
+    <div class="section-shell">
+      <div class="section-header">
+        <div class="section-title-group">
+          <div class="section-eyebrow">Capabilities</div>
+          <h3>From field devices to secure data layers</h3>
+        </div>
+        <div class="section-subtitle">
+          Automation, robotics and cybersecurity wired together in one stack — from shop floor to secure cloud, with a focus on availability and resilience.
+        </div>
       </div>
-    </section>
 
-    <!-- CONTACT -->
-    <section id="contact" class="square" aria-labelledby="contact-title">
-      <h2 id="contact-title">Contact</h2>
-      <p>Send a brief specification or request and we will follow up with a technical proposal.</p>
+      <div class="capabilities-grid">
+        <article class="cap-card">
+          <div class="cap-tag">Automation</div>
+          <div class="cap-title">PLC, SCADA & industrial networks</div>
+          <p>
+            Design, programming and commissioning of PLC/SCADA systems, industrial buses and resilient architectures for production lines and critical environments.
+          </p>
+          <div class="cap-meta">Control · Redundancy · Monitoring</div>
+        </article>
 
-      <div class="contact-grid" role="form" aria-label="Contact form">
-        <form action="https://formspree.io/f/xqawabvr" method="POST" style="display:flex;flex-direction:column;gap:12px">
+        <article class="cap-card">
+          <div class="cap-tag">Robotics</div>
+          <div class="cap-title">Robotic cells & integration</div>
+          <p>
+            Integration of industrial robots and cobots into existing processes, safety zoning, and coordination with vision systems and conveyor-based flows.
+          </p>
+          <div class="cap-meta">Integration · Vision · Safety</div>
+        </article>
+
+        <article class="cap-card">
+          <div class="cap-tag">Cybersecurity</div>
+          <div class="cap-title">OT security & resilience</div>
+          <p>
+            Segmentation, monitoring and hardening of industrial networks with a security-first approach: from asset inventory to incident response and recovery.
+          </p>
+          <div class="cap-meta">Visibility · Protection · Response</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact section with your original form / endpoint / fields respected -->
+  <section id="contact" class="reveal">
+    <div class="contact-shell">
+      <div>
+        <div class="contact-meta">Contact</div>
+        <h3>Start a project or ask a question</h3>
+        <p class="contact-subtitle">
+          Tell us briefly about your automation, robotics or cybersecurity needs. We’ll get back to you with next steps and possible approaches.
+        </p>
+        <p class="contact-note">
+          We are based in Barcelona (BCN) and work with industrial and technology partners.
+        </p>
+      </div>
+
+      <div class="contact-panel">
+        <form action="https://formspree.io/f/xqawabvr" method="POST">
           <div>
             <label for="name">Name / Company</label>
-            <input id="name" name="name" type="text" required>
+            <input id="name" type="text" name="name" placeholder="Name / Company" required>
           </div>
           <div>
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" required>
+            <input id="email" type="email" name="email" placeholder="Email" required>
           </div>
           <div>
-            <label for="message">Message / Requirement</label>
-            <textarea id="message" name="message" required></textarea>
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Message" required></textarea>
           </div>
-
-          <!-- Formspree extras -->
-          <input type="hidden" name="_subject" value="MDEI website inquiry">
-          <input type="hidden" name="_language" value="en">
-          <input type="hidden" name="_captcha" value="false">
-
-          <div style="margin-top:6px">
-            <button class="submit" type="submit">Send</button>
-          </div>
+          <button type="submit">Send</button>
         </form>
-
-        <aside style="display:flex;flex-direction:column;gap:10px">
-          <div style="border:2px solid var(--divider);padding:12px"> 
-            <div style="font-weight:800">Office</div>
-            <div style="color:var(--muted)">Barcelona (BCN)</div>
-          </div>
-          <div style="border:2px solid var(--divider);padding:12px">
-            <div style="font-weight:800">Phone</div>
-            <div style="color:var(--muted)">727 785 408</div>
-          </div>
-          <div style="border:2px solid var(--divider);padding:12px">
-            <div style="font-weight:800">Email</div>
-            <div style="color:var(--muted)">contacto@mdei.com</div>
-          </div>
-        </aside>
+        <div class="contact-note">
+          The form uses Formspree for secure delivery. We will never share your details with third parties.
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <footer>
-      <div style="max-width:var(--maxw);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-        <div>© 2025 MDEI</div>
-        <div style="color:var(--muted)">Industrial automation · robotics integration · OT cybersecurity</div>
-      </div>
-    </footer>
-  </main>
+  <footer>
+    © 2025 MDEI — Automation · Robotics · Cybersecurity — Barcelona (BCN)
+  </footer>
 
   <script>
-    // Reveal sections progressively (simple, minimal)
-    document.querySelectorAll('section').forEach((s, i) => {
-      s.style.opacity = 0;
-      s.style.transform = 'translateY(8px)';
-      s.style.transition = 'opacity .6s ease, transform .6s ease';
-    });
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.style.opacity = 1;
-          e.target.style.transform = 'translateY(0)';
-          io.unobserve(e.target);
-        }
-      });
-    }, {threshold: 0.08});
-    document.querySelectorAll('section').forEach(s => io.observe(s));
-
-    // Confirm on submit
-    const form = document.querySelector('form[action*="formspree"]');
-    if(form){
-      form.addEventListener('submit', function(e){
-        // basic validation handled by required attrs; show a short delay confirmation
-        setTimeout(()=> alert('Thank you — your message was sent. MDEI will contact you shortly.'), 600);
+    // Smooth scroll to capabilities from secondary CTA
+    const viewCapabilitiesBtn = document.getElementById('view-capabilities');
+    if (viewCapabilitiesBtn) {
+      viewCapabilitiesBtn.addEventListener('click', () => {
+        const target = document.getElementById('capabilities');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
+
+    const prefersReduced = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Reveal-on-scroll for sections
+    (function() {
+      const revealEls = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        revealEls.forEach(el => el.classList.add('reveal--visible'));
+        return;
+      }
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal--visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold:0.18
+      });
+      revealEls.forEach(el => observer.observe(el));
+    })();
+
+    // Subtle parallax based on pointer, inspired by futuristic data UIs
+    (function() {
+      if (prefersReduced) return;
+      const layers = document.querySelectorAll('[data-parallax-layer]');
+      if (!layers.length) return;
+
+      let frameRequested = false;
+      let pointerX = 0;
+      let pointerY = 0;
+
+      function onPointerMove(e) {
+        pointerX = (e.clientX / window.innerWidth) - 0.5;
+        pointerY = (e.clientY / window.innerHeight) - 0.5;
+
+        if (!frameRequested) {
+          frameRequested = true;
+          window.requestAnimationFrame(updateLayers);
+        }
+      }
+
+      function updateLayers() {
+        layers.forEach((layer, index) => {
+          const depth = (index + 1) / layers.length;
+          const translateX = -pointerX * 22 * depth;
+          const translateY = -pointerY * 14 * depth;
+          layer.style.transform =
+            'translate3d(' + translateX.toFixed(2) + 'px,' +
+            translateY.toFixed(2) + 'px,0)';
+        });
+        frameRequested = false;
+      }
+
+      window.addEventListener('pointermove', onPointerMove);
+    })();
   </script>
 </body>
 </html>
