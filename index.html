@@ -1,186 +1,346 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>MDEI — Automatización, Robótica y Ciberseguridad</title>
-  <meta name="description" content="MDEI: Soluciones integrales en automatización electromecánica, robótica industrial y ciberseguridad para entornos productivos." />
-  <meta name="theme-color" content="#0e1320" />
-
+  <title>MDEI — Automation · Robotics · Cybersecurity</title>
+  <meta name="description" content="MDEI — Industrial automation, robotics integration and industrial cybersecurity. Based in Barcelona (BCN)." />
+  <meta name="theme-color" content="#ffffff" />
   <style>
+    /* Brutalist / minimal reset */
     :root{
-      --bg-900:#0e1320;
-      --bg-800:#141824;
-      --panel:rgba(255,255,255,0.03);
-      --accent-600:#6d72c3;
-      --accent-400:#9ba3eb;
-      --muted:#b9c0e6;
-      --white:#fff;
-      --radius:12px;
-      --max-width:1100px;
-      --easing:cubic-bezier(.2,.9,.3,1);
+      --bg: #ffffff;
+      --text: #0b0b0b;
+      --muted: #4a4a4a;
+      --accent: #111827; /* dark accent for headings */
+      --panel: #f6f7fb;
+      --divider: #e5e7eb;
+      --maxw: 1100px;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;scroll-behavior:smooth}
-    body{
-      margin:0;
-      background:
-        radial-gradient(60rem 40rem at 10% 10%,rgba(107,114,192,0.06),transparent 8%),
-        radial-gradient(40rem 30rem at 95% 85%,rgba(155,163,235,0.03),transparent 6%),
-        linear-gradient(180deg,var(--bg-900),var(--bg-800));
-      color:var(--muted);
-      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-      line-height:1.5;
-      -webkit-font-smoothing:antialiased;
-    }
+    html,body{height:100%;margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;line-height:1.45;-webkit-font-smoothing:antialiased}
     a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+
+    /* sticky minimal header */
     header{
-      position:sticky;top:0;z-index:60;
-      backdrop-filter:blur(8px);
-      background:linear-gradient(180deg,rgba(14,19,32,0.72),rgba(14,19,32,0.58));
-      border-bottom:1px solid rgba(255,255,255,0.03);
+      position:sticky;
+      top:0;
+      z-index:40;
+      background:var(--bg);
+      border-bottom:1px solid var(--divider);
+      display:flex;
+      align-items:center;
+      height:64px;
     }
-    .nav-wrap{max-width:var(--max-width);margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:24px}
-    .brand{display:flex;gap:16px;align-items:center}
-    .logo-mark{width:46px;height:46px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04)}
-    .logo-mark svg{width:36px;height:36px}
-    .brand-title{display:flex;flex-direction:column;line-height:1}
-    .brand-title .name{color:var(--white);font-weight:800;font-size:1.05rem}
-    .brand-title .tag{color:var(--muted);font-size:.78rem;margin-top:2px}
-    nav.primary{margin-left:auto;display:flex;gap:18px;align-items:center}
-    nav.primary a{color:var(--muted);font-weight:600;font-size:.95rem;padding:8px 10px;border-radius:8px;transition:background .18s var(--easing),transform .12s var(--easing)}
-    nav.primary a:hover{background:rgba(155,163,235,0.04);color:var(--accent-400);transform:translateY(-2px)}
-    .cta{background:linear-gradient(90deg,var(--accent-600),var(--accent-400));color:#fff;padding:8px 14px;border-radius:10px;font-weight:700}
-    main{max-width:var(--max-width);margin:40px auto;padding:0 20px}
-    .hero{display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:center;margin-bottom:48px}
-    .hero-card{background:rgba(255,255,255,0.02);border-radius:var(--radius);padding:44px;border:1px solid rgba(255,255,255,0.04)}
-    .hero h1{color:#fff;font-size:clamp(1.7rem,3.2vw,2.6rem);margin:0 0 12px}
-    .hero p.lead{color:var(--muted);font-size:1.05rem;margin-bottom:20px;max-width:60ch}
-    .actions{display:flex;gap:14px;flex-wrap:wrap}
-    .panel{background:rgba(255,255,255,0.015);border-radius:12px;padding:20px;border:1px solid rgba(255,255,255,0.03)}
-    .panel h4{color:var(--accent-400);margin:0 0 10px}
-    .panel .small-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);color:var(--muted);font-size:.95rem}
-    .small-item strong{color:#fff}
-    section.block{margin-bottom:34px;padding:28px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:14px}
-    .card{padding:18px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02);transition:transform .2s var(--easing)}
-    .card:hover{transform:translateY(-6px)}
-    .card h3{color:var(--accent-400);margin:0;font-size:1.05rem}
+    .nav-inner{
+      width:100%;
+      max-width:var(--maxw);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      padding:0 20px;
+    }
+
+    /* logo simple, square, white */
+    .logo {
+      display:flex;
+      align-items:center;
+      gap:12px;
+      user-select:none;
+    }
+    .logo-mark{
+      width:44px;height:44px;
+      display:grid;place-items:center;
+      background:#ffffff;
+      border:2px solid var(--text);
+      box-sizing:border-box;
+    }
+    .logo-mark svg{width:36px;height:20px}
+    .brand-text{
+      display:flex;flex-direction:column;line-height:1;
+    }
+    .brand-text .title{font-weight:800;letter-spacing:-0.02em;font-size:1rem;color:var(--text)}
+    .brand-text .tag{font-size:0.78rem;color:var(--muted);margin-top:2px}
+
+    /* main container */
+    main{max-width:var(--maxw);margin:48px auto;padding:0 20px}
+
+    /* Hero */
+    .hero{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:28px;
+      align-items:start;
+    }
+    .block{
+      background:transparent;
+      padding:0;
+      margin:0 0 28px 0;
+    }
+    .hero-left{
+      border:2px solid var(--divider);
+      padding:36px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+    .kicker{color:var(--muted);font-weight:700;font-size:0.9rem;letter-spacing:0.06em;text-transform:uppercase}
+    .headline{font-size:clamp(1.8rem,3.2vw,2.6rem);color:var(--accent);font-weight:800;margin:0;line-height:1.02}
+    .lead{color:var(--text);font-size:1.05rem;margin:0}
+    .cta-row{display:flex;gap:12px;margin-top:8px}
+    .btn{
+      display:inline-block;padding:10px 14px;border:2px solid var(--text);background:transparent;color:var(--text);
+      font-weight:700;cursor:pointer;letter-spacing:0.02em;
+    }
+    .btn.ghost{border-color:var(--muted);color:var(--muted);font-weight:600}
+    .meta-line{font-size:0.95rem;color:var(--muted);margin-top:12px}
+
+    /* right panel */
+    .hero-right{
+      border:2px solid var(--divider);
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      box-sizing:border-box;
+    }
+    .panel-title{font-weight:800;color:var(--accent);font-size:0.95rem;margin:0}
+    .contact-item{display:flex;justify-content:space-between;border-top:1px solid var(--divider);padding:10px 0}
+    .contact-item:first-of-type{border-top:0;padding-top:0}
+
+    /* sections square, no radius */
+    section.square{
+      border:2px solid var(--divider);
+      padding:28px;
+      margin-bottom:24px;
+    }
+    section h2{
+      margin:0 0 14px 0;color:var(--accent);font-size:1.05rem;font-weight:800;
+      letter-spacing:0.02em;
+    }
+    section p{margin:0;color:var(--text);font-size:1rem}
+
+    /* grid 3 columns square cards */
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:16px;
+      margin-top:12px;
+    }
+    .card{
+      border:2px solid var(--divider);
+      padding:18px;
+      box-sizing:border-box;
+      min-height:120px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .card h3{margin:0;font-size:1rem;color:var(--text);font-weight:800}
+    .card p{margin:0;color:var(--muted);font-size:0.95rem}
+
+    /* solutions list */
     .solutions-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-    .solution{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)}
-    .solution .dot{width:12px;height:12px;border-radius:999px;background:var(--accent-600);margin-top:6px}
-    .contact-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
-    .field{display:flex;flex-direction:column;gap:6px}
-    input,textarea{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:10px 12px;border-radius:8px;font-size:.95rem}
-    textarea{min-height:120px;resize:vertical}
-    .submit{display:inline-block;padding:10px 16px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent-600),var(--accent-400));color:#fff;font-weight:700;cursor:pointer}
-    footer{margin-top:40px;padding:28px 0;color:var(--muted);font-size:.9rem;border-top:1px solid rgba(255,255,255,0.02)}
-    @media(max-width:1024px){.hero{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}}
-    @media(max-width:640px){nav.primary{display:none}.grid-3{grid-template-columns:1fr}}
+    .solution{display:flex;gap:12px;align-items:flex-start;padding:12px;border:2px solid var(--divider)}
+    .dot{width:10px;height:10px;background:var(--text);align-self:flex-start}
+
+    /* contact form */
+    .contact-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;margin-top:12px}
+    label{font-weight:700;font-size:0.9rem;color:var(--text)}
+    input,textarea{width:100%;box-sizing:border-box;border:2px solid var(--divider);padding:10px;font-size:0.95rem;color:var(--text);background:transparent}
+    textarea{min-height:120px}
+    .submit{display:inline-block;padding:10px 14px;border:2px solid var(--text);background:transparent;color:var(--text);font-weight:800;cursor:pointer}
+
+    /* partners */
+    .partners{display:flex;gap:18px;align-items:center;justify-content:flex-start;margin-top:10px;border-top:2px solid var(--divider);padding-top:14px}
+    .partner{width:140px;height:40px;display:grid;place-items:center;border:2px solid var(--divider);font-weight:700;color:var(--muted);}
+
+    footer{border-top:2px solid var(--divider);padding:18px 0;margin-top:28px;color:var(--muted);font-size:0.95rem}
+
+    /* responsive */
+    @media (max-width:960px){
+      .hero{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr}
+      .contact-grid{grid-template-columns:1fr}
+      .partners{flex-wrap:wrap}
+    }
   </style>
 </head>
 <body>
-<header>
-  <div class="nav-wrap">
-    <div class="brand">
-      <div class="logo-mark">
-        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="8" width="44" height="32" rx="6" fill="#0e1320"/><text x="24" y="32" text-anchor="middle" font-family="Inter,Arial" font-weight="800" font-size="18" fill="#ffffff">MDEI</text></svg>
+  <!-- header minimal sticky -->
+  <header>
+    <div class="nav-inner">
+      <div class="logo" aria-label="MDEI">
+        <div class="logo-mark" aria-hidden="true">
+          <!-- simple MDEI mark -->
+          <svg viewBox="0 0 120 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+            <text x="8" y="26" font-family="system-ui, Arial" font-weight="800" font-size="22" fill="#0b0b0b">MDEI</text>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="title">MDEI</div>
+          <div class="tag">Automation · Robotics · Cybersecurity</div>
+        </div>
       </div>
-      <div class="brand-title">
-        <div class="name">MDEI</div>
-        <div class="tag">Automatización · Robótica · Ciberseguridad</div>
+      <!-- header intentionally minimal: no menu -->
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero block" aria-label="Hero">
+      <div class="hero-left">
+        <div class="kicker">Industrial Technology</div>
+        <h1 class="headline">Integrated solutions for automation, robotics and industrial cybersecurity</h1>
+        <p class="lead">MDEI delivers engineering-grade automation systems, robot integration and OT/IT cybersecurity to enable resilient, efficient industrial operations. We design, implement and maintain turnkey systems tailored to production environments.</p>
+
+        <div class="cta-row">
+          <a class="btn" href="#contact">Request proposal</a>
+          <a class="btn ghost" href="#solutions">View solutions</a>
+        </div>
+
+        <div class="meta-line">Phone: <strong>727 785 408</strong> · Location: <strong>Barcelona (BCN)</strong></div>
       </div>
-    </div>
-    <nav class="primary">
-      <a href="#inicio">Inicio</a>
-      <a href="#nosotros">Quiénes somos</a>
-      <a href="#areas">Áreas</a>
-      <a href="#soluciones">Soluciones</a>
-      <a href="#contacto">Contacto</a>
-      <a class="cta" href="#contacto">Solicitar Información</a>
-    </nav>
-  </div>
-</header>
 
-<main id="inicio">
-  <section class="hero">
-    <div class="hero-card">
-      <h1>Soluciones industriales integradas en automatización, robótica y ciberseguridad</h1>
-      <p class="lead">En <strong>MDEI</strong> diseñamos e implementamos sistemas que combinan ingeniería electromecánica, control automatizado, robótica avanzada y protección digital para infraestructuras críticas y procesos productivos.</p>
-      <div class="actions">
-        <a class="cta" href="#soluciones">Ver soluciones</a>
-        <a class="muted" href="#areas">Áreas de especialización</a>
-      </div>
-    </div>
-    <aside class="panel">
-      <h4>Contacto Corporativo</h4>
-      <div class="small-item"><span>Email</span><strong>contacto@mdei.com</strong></div>
-      <div class="small-item"><span>Teléfono</span><strong>+34 600 123 456</strong></div>
-      <div class="small-item"><span>Oficina</span><strong>Madrid, España</strong></div>
-    </aside>
-  </section>
+      <aside class="hero-right" aria-label="Quick contact">
+        <div>
+          <div class="panel-title">Corporate contact</div>
+          <div style="height:8px"></div>
+          <div class="contact-item"><span>Email</span><span style="font-weight:800">contacto@mdei.com</span></div>
+          <div class="contact-item"><span>Phone</span><span style="font-weight:800">727 785 408</span></div>
+          <div class="contact-item"><span>Office</span><span style="font-weight:800">Barcelona (BCN)</span></div>
+        </div>
 
-  <section id="nosotros" class="block">
-    <h2 style="color:var(--accent-400)">Quiénes somos</h2>
-    <p>MDEI es una firma de ingeniería enfocada en la transformación tecnológica de la industria. Combinamos experiencia en automatización electromecánica, integración robótica y ciberseguridad industrial para ofrecer soluciones fiables y escalables.</p>
-  </section>
-
-  <section id="areas" class="block">
-    <h2 style="color:var(--accent-400)">Áreas de especialización</h2>
-    <div class="grid-3">
-      <div class="card"><h3>Automatización Electromecánica</h3><p>Diseño de arquitecturas de control (PLC/SCADA), paneles eléctricos e instrumentación industrial.</p></div>
-      <div class="card"><h3>Robótica Industrial</h3><p>Integración de robots industriales y colaborativos, visión artificial y control de movimiento.</p></div>
-      <div class="card"><h3>Ciberseguridad Industrial</h3><p>Auditorías OT, segmentación segura, detección de intrusiones y planes de continuidad.</p></div>
-    </div>
-  </section>
-
-  <section id="soluciones" class="block">
-    <h2 style="color:var(--accent-400)">Soluciones</h2>
-    <div class="solutions-list">
-      <div class="solution"><div class="dot"></div><p><strong>Automatización de líneas de producción:</strong> Integración completa de PLC, I/O, SCADA y HMI.</p></div>
-      <div class="solution"><div class="dot"></div><p><strong>Robots colaborativos:</strong> Celdas seguras con visión artificial para ensamblaje y control de calidad.</p></div>
-      <div class="solution"><div class="dot"></div><p><strong>Programa de ciberseguridad OT:</strong> Auditoría, segmentación, hardening y monitorización continua.</p></div>
-    </div>
-  </section>
-
-  <section id="contacto" class="block">
-    <h2 style="color:var(--accent-400)">Contacto</h2>
-    <div class="contact-grid">
-      <form action="https://formspree.io/f/xqawabvr" method="POST">
-        <div class="field"><label for="nombre">Nombre / Empresa</label><input id="nombre" name="nombre" type="text" required></div>
-        <div class="field" style="margin-top:12px"><label for="email">Correo electrónico</label><input id="email" name="email" type="email" required></div>
-        <div class="field" style="margin-top:12px"><label for="mensaje">Mensaje / Requerimiento</label><textarea id="mensaje" name="mensaje" required></textarea></div>
-        <input type="hidden" name="_subject" value="Nuevo mensaje desde MDEI Web">
-        <input type="hidden" name="_language" value="es">
-        <input type="hidden" name="_captcha" value="false">
-        <div style="margin-top:14px"><button class="submit" type="submit">Enviar solicitud</button></div>
-      </form>
-      <aside style="padding:14px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.02)">
-        <h4 style="color:var(--accent-400)">Datos de contacto</h4>
-        <p><strong>Email:</strong> info@mdei.com<br><strong>Tel:</strong> +34 727 785 408<br><strong>Dirección:</strong> BCN, España</p>
+        <div style="margin-top:8px">
+          <div style="font-weight:800;color:var(--text);margin-bottom:8px">Trusted by</div>
+          <div class="partners" aria-hidden="true">
+            <div class="partner">SIEMENS</div>
+            <div class="partner">ABB</div>
+            <div class="partner">SCHNEIDER</div>
+            <div class="partner">OEM</div>
+          </div>
+        </div>
       </aside>
-    </div>
-  </section>
+    </section>
 
-  <footer>
-    <div style="max-width:var(--max-width);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px">
-      <div>© 2025 MDEI — Ingeniería, Automatización y Ciberseguridad Industrial</div>
-      <div><a href="#">Política de Privacidad</a> · <a href="#">Aviso Legal</a></div>
-    </div>
-  </footer>
-</main>
+    <!-- WHO WE ARE -->
+    <section id="nosotros" class="square" aria-labelledby="who-title">
+      <h2 id="who-title">Who we are</h2>
+      <p>MDEI is an industrial engineering firm focused on delivering high-integrity automation, robotics integration and cybersecurity services for production environments. Our multidisciplinary team blends control engineering, systems integration and OT security practices to deliver dependable, maintainable systems at scale.</p>
+    </section>
 
-<script>
-  // Simple reveal animation
-  const items=document.querySelectorAll('section');
-  const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity=1;obs.unobserve(e.target);}})},{threshold:.1});
-  items.forEach(it=>{it.style.opacity=0;it.style.transition='opacity .8s ease';obs.observe(it);});
+    <!-- AREAS -->
+    <section id="areas" class="square" aria-labelledby="areas-title">
+      <h2 id="areas-title">Core competencies</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Automation — Electromechanical</h3>
+          <p>PLC / SCADA architectures, electrical panels, instrumentation and telemetry for process control and energy efficiency.</p>
+        </div>
+        <div class="card">
+          <h3>Robotics — Integration</h3>
+          <p>Industrial and collaborative robot cells, machine vision and motion control for precision assembly and inspection.</p>
+        </div>
+        <div class="card">
+          <h3>Cybersecurity — Industrial OT</h3>
+          <p>OT risk assessments, network segmentation, intrusion detection and incident response tailored to production networks.</p>
+        </div>
+      </div>
+    </section>
 
-  // Confirm submit
-  const form=document.querySelector('form[action*="formspree"]');
-  if(form){
-    form.addEventListener('submit',()=>setTimeout(()=>alert('✅ Su mensaje fue enviado correctamente. Gracias por contactar con MDEI.'),800));
-  }
-</script>
+    <!-- SOLUTIONS -->
+    <section id="solutions" class="square" aria-labelledby="sol-title">
+      <h2 id="sol-title">Representative solutions</h2>
+      <div class="solutions-list">
+        <div class="solution"><div class="dot" aria-hidden="true"></div><p><strong>Turnkey automation projects:</strong> End-to-end delivery from engineering and panels to commissioning and HMI/SCADA deployment.</p></div>
+        <div class="solution"><div class="dot" aria-hidden="true"></div><p><strong>Robotic cells & cobots:</strong> Safe collaborative robots and vision systems for flexible production lines.</p></div>
+        <div class="solution"><div class="dot" aria-hidden="true"></div><p><strong>Industrial cyber program:</strong> Vulnerability assessment, segmentation, monitoring and operational hardening.</p></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="square" aria-labelledby="contact-title">
+      <h2 id="contact-title">Contact</h2>
+      <p>Send a brief specification or request and we will follow up with a technical proposal.</p>
+
+      <div class="contact-grid" role="form" aria-label="Contact form">
+        <form action="https://formspree.io/f/xqawabvr" method="POST" style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <label for="name">Name / Company</label>
+            <input id="name" name="name" type="text" required>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required>
+          </div>
+          <div>
+            <label for="message">Message / Requirement</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+
+          <!-- Formspree extras -->
+          <input type="hidden" name="_subject" value="MDEI website inquiry">
+          <input type="hidden" name="_language" value="en">
+          <input type="hidden" name="_captcha" value="false">
+
+          <div style="margin-top:6px">
+            <button class="submit" type="submit">Send</button>
+          </div>
+        </form>
+
+        <aside style="display:flex;flex-direction:column;gap:10px">
+          <div style="border:2px solid var(--divider);padding:12px"> 
+            <div style="font-weight:800">Office</div>
+            <div style="color:var(--muted)">Barcelona (BCN)</div>
+          </div>
+          <div style="border:2px solid var(--divider);padding:12px">
+            <div style="font-weight:800">Phone</div>
+            <div style="color:var(--muted)">727 785 408</div>
+          </div>
+          <div style="border:2px solid var(--divider);padding:12px">
+            <div style="font-weight:800">Email</div>
+            <div style="color:var(--muted)">contacto@mdei.com</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <footer>
+      <div style="max-width:var(--maxw);margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>© 2025 MDEI</div>
+        <div style="color:var(--muted)">Industrial automation · robotics integration · OT cybersecurity</div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Reveal sections progressively (simple, minimal)
+    document.querySelectorAll('section').forEach((s, i) => {
+      s.style.opacity = 0;
+      s.style.transform = 'translateY(8px)';
+      s.style.transition = 'opacity .6s ease, transform .6s ease';
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = 1;
+          e.target.style.transform = 'translateY(0)';
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold: 0.08});
+    document.querySelectorAll('section').forEach(s => io.observe(s));
+
+    // Confirm on submit
+    const form = document.querySelector('form[action*="formspree"]');
+    if(form){
+      form.addEventListener('submit', function(e){
+        // basic validation handled by required attrs; show a short delay confirmation
+        setTimeout(()=> alert('Thank you — your message was sent. MDEI will contact you shortly.'), 600);
+      });
+    }
+  </script>
 </body>
 </html>
