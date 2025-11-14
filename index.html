@@ -47,19 +47,28 @@
             </div>
           </div>
 
+          <!-- MONITOR EN TIEMPO REAL -->
           <div class="hero-visual">
-            <div class="hero-panel" id="hero-panel">
-              <div class="hero-panel-image" aria-hidden="true"></div>
-              <div class="hero-panel-grid"></div>
-              <div class="hero-panel-scan"></div>
-              <div class="hero-panel-content">
-                <div class="hero-panel-title">Industrial systems</div>
-                <div class="hero-panel-main">Automation · Robotics · Cybersecurity</div>
-                <div class="hero-panel-tags">
-                  <span class="hero-panel-tag">PLC / SCADA</span>
-                  <span class="hero-panel-tag">Robotics</span>
-                  <span class="hero-panel-tag">OT Security</span>
+            <div class="hero-monitor" id="hero-monitor">
+              <div class="hero-monitor-header">
+                <div>
+                  <div class="hero-monitor-label">Spain · Electricity demand</div>
+                  <div class="hero-monitor-sub">Real-time grid data</div>
                 </div>
+                <div class="hero-monitor-value" id="demand-current">--</div>
+              </div>
+
+              <div class="hero-monitor-body">
+                <canvas id="demand-chart"
+                        aria-label="Real-time electricity demand in Spain"
+                        role="img"></canvas>
+              </div>
+
+              <div class="hero-monitor-footer">
+                <span id="demand-updated">Último dato: --</span>
+                <span class="hero-monitor-status" id="demand-status">
+                  Cargando datos…
+                </span>
               </div>
             </div>
           </div>
@@ -164,7 +173,9 @@
     © 2025 MDEI — Automation · Robotics · Cybersecurity — Barcelona (BCN)
   </footer>
 
-  <!-- IMPORTANTE: ruta relativa sin barra inicial -->
+  <!-- Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- App -->
   <script src="./assets/js/app.js"></script>
 </body>
 </html>
