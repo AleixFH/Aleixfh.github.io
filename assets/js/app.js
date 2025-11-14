@@ -12,11 +12,8 @@ const STORAGE_KEYS = {
 function setView(name) {
   const views = qsa('.view');
   views.forEach(v => {
-    if (v.dataset.view === name) {
-      v.classList.add('view--active');
-    } else {
-      v.classList.remove('view--active');
-    }
+    if (v.dataset.view === name) v.classList.add('view--active');
+    else v.classList.remove('view--active');
   });
 
   const links = qsa('.nav-link');
@@ -184,7 +181,7 @@ function initHeroParallax() {
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
 
-  const panel = document.getElementById('hero-monitor') || document.getElementById('hero-panel');
+  const panel = qs('#hero-monitor');
   if (!panel) return;
 
   let rect = panel.getBoundingClientRect();
@@ -216,9 +213,9 @@ function initHeroParallax() {
   });
 }
 
-// ----- Monitor demanda REE + Chart.js -----
+// ----- Monitor SCADA simulado con Chart.js -----
 
-function initDemandChart() {
+function initDemandChartSimulated() {
   const canvas = document.getElementById('demand-chart');
   const valueEl = document.getElementById('demand-current');
   const updatedEl = document.getElementById('demand-updated');
@@ -226,135 +223,121 @@ function initDemandChart() {
 
   if (!canvas || !window.Chart) return;
 
-  let chart;
+  const ctx = canvas.getContext('2d');
 
-  const pad = n => String(n).padStart(2, '0');
+  const maxPoints = 60; // últimos 60 segundos
+  const labels = [];
+  const values = [];
 
-  function fmtIsoNoSeconds(d) {
-    return (
-      d.getFullYear() + '-' +
-      pad(d.getMonth() + 1) + '-' +
-      pad(d.getDate()) + 'T' +
-      pad(d.getHours()) + ':' +
-      pad(d.getMinutes())
-    );
+  let base = 26000; // MW aproximados
+
+  const now = Date.now();
+  for (let i = maxPoints - 1; i >= 0; i--) {
+    const t = new Date(now - i * 1000);
+    labels.push(t);
+    base += (Math.random() - 0.5) * 200;
+    values.push(base);
   }
 
   const timeFormatter = new Intl.DateTimeFormat('es-ES', {
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    second: '2-digit'
   });
 
-  async function fetchData() {
-    const now = new Date();
-    const end = new Date(now.getTime() - 15 * 60 * 1000); // 15 min de margen
-    const start = new Date(end.getTime() - 6 * 60 * 60 * 1000); // últimas 6 horas
+  const data = {
+    labels,
+    datasets: [{
+      data: values,
+      tension: 0.35,
+      borderWidth: 2,
+      borderColor: '#111827',
+      pointRadius: 0,
+      fill: false
+    }]
+  };
 
-    const params = new URLSearchParams({
-      start_date: fmtIsoNoSeconds(start),
-      end_date: fmtIsoNoSeconds(end),
-      time_trunc: 'hour'
-    });
-
-    const url = 'https://apidatos.ree.es/es/datos/demanda/demanda-tiempo-real?' +
-                params.toString();
-
-    if (statusEl) statusEl.textContent = 'Actualizando datos…';
-
-    try {
-      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const json = await res.json();
-
-      const included = json.included || [];
-      const attr = included[0] && included[0].attributes;
-      const series = (attr && attr.values) || [];
-      if (!series.length) throw new Error('Sin datos');
-
-      const labels = series.map(p => new Date(p.datetime));
-      const values = series.map(p => p.value);
-
-      const last = series[series.length - 1];
-      if (last && last.value != null && valueEl) {
-        const mw = Math.round(last.value);
-        valueEl.innerHTML = mw.toLocaleString('es-ES') + ' <span class="unit">MW</span>';
-      }
-      if (last && last.datetime && updatedEl) {
-        const d = new Date(last.datetime);
-        updatedEl.textContent = 'Último dato: ' + timeFormatter.format(d);
-      }
-
-      const chartData = {
-        labels,
-        datasets: [{
-          data: values,
-          tension: 0.35,
-          borderWidth: 2,
-          borderColor: '#111827',
-          pointRadius: 0,
-          fill: false
-        }]
-      };
-
-      const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-            callbacks: {
-              title: items => {
-                const idx = items[0].dataIndex;
-                const d = labels[idx];
-                return d ? timeFormatter.format(d) : '';
-              },
-              label: ctx => {
-                const v = ctx.parsed.y;
-                return v.toLocaleString('es-ES') + ' MW';
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { display: false },
-            ticks: {
-              maxTicksLimit: 5,
-              callback: (value, idx) => timeFormatter.format(labels[idx])
-            }
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        callbacks: {
+          title: items => {
+            const idx = items[0].dataIndex;
+            const d = labels[idx];
+            return d ? timeFormatter.format(d) : '';
           },
-          y: {
-            grid: { color: 'rgba(209,213,219,0.7)', drawBorder: false },
-            ticks: {
-              maxTicksLimit: 4,
-              callback: v => v.toLocaleString('es-ES') + ' MW'
-            }
+          label: ctx => {
+            const v = ctx.parsed.y;
+            return v.toFixed(0).toLocaleString('es-ES') + ' MW';
           }
         }
-      };
-
-      if (!chart) {
-        chart = new Chart(canvas.getContext('2d'), {
-          type: 'line',
-          data: chartData,
-          options
-        });
-      } else {
-        chart.data = chartData;
-        chart.update();
       }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          maxTicksLimit: 5,
+          callback: (value, idx) => timeFormatter.format(labels[idx])
+        }
+      },
+      y: {
+        grid: { color: 'rgba(209,213,219,0.7)', drawBorder: false },
+        ticks: {
+          maxTicksLimit: 4,
+          callback: v => v.toLocaleString('es-ES') + ' MW'
+        }
+      }
+    },
+    animation: {
+      duration: 200
+    }
+  };
 
-      if (statusEl) statusEl.textContent = 'Fuente: Red Eléctrica · REData API';
-    } catch (err) {
-      console.error('Error cargando demanda REE', err);
-      if (statusEl) statusEl.textContent = 'No se pueden cargar los datos ahora mismo.';
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options
+  });
+
+  function updateValue(v, t) {
+    if (valueEl) {
+      valueEl.innerHTML = Math.round(v).toLocaleString('es-ES') +
+        '<span class="unit"> MW</span>';
+    }
+    if (updatedEl) {
+      updatedEl.textContent = 'Updated: ' + timeFormatter.format(t);
     }
   }
 
-  fetchData();
-  setInterval(fetchData, 5 * 60 * 1000); // cada 5 minutos
+  if (statusEl) statusEl.textContent = 'Live simulation · 1s refresh';
+
+  updateValue(values[values.length - 1], labels[labels.length - 1]);
+
+  setInterval(() => {
+    const last = values[values.length - 1];
+    let next = last + (Math.random() - 0.5) * 300;
+    // límites para que no se vaya de madre
+    next = Math.max(23000, Math.min(34000, next));
+
+    const t = new Date();
+
+    labels.push(t);
+    values.push(next);
+    if (labels.length > maxPoints) labels.shift();
+    if (values.length > maxPoints) values.shift();
+
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = values;
+    chart.update('none');
+
+    updateValue(next, t);
+  }, 1000);
 }
 
 // ----- Init -----
@@ -367,5 +350,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initDomains();
   initHeroParallax();
-  initDemandChart();
+  initDemandChartSimulated();
 });
