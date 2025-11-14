@@ -116,13 +116,14 @@ header.is-scrolled {
 
 main { padding-top: 84px; }
 
-/* Vistas: por defecto se ven, la app las controla si hay JS */
+/* Vistas: modo sin JS */
 
 .view {
   padding: 0;
 }
 
 /* Cuando JS está listo, solo se muestra la view activa */
+
 body.js-app-ready .view {
   display: none;
   opacity: 0;
@@ -171,6 +172,8 @@ body.js-app-ready .view.view--active {
   align-items: center;
 }
 
+/* Botones */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -212,99 +215,82 @@ body.js-app-ready .view.view--active {
   transform: translateY(0.5px);
 }
 
-/* Hero visual */
+/* Hero visual + monitor */
 
 .hero-visual {
   position: relative;
   height: 280px;
-  max-width: 360px;
+  max-width: 420px;
   justify-self: end;
   perspective: 1200px;
 }
-.hero-panel {
+
+.hero-monitor {
   position: absolute;
   inset: 0;
-  background:#f3f4f6;
+  border-radius: 18px;
   border:1px solid var(--border-subtle);
+  background: radial-gradient(circle at top, #f9fafb 0, #f3f4f6 45%, #e5e7eb 100%);
   box-shadow:var(--shadow-soft);
-  overflow:hidden;
-  transform-style:preserve-3d;
-  transform-origin:center;
-  will-change:transform;
-  transition:transform 180ms ease-out,box-shadow 180ms ease-out;
-}
-.hero-panel-image {
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(to right,rgba(255,255,255,0.8),rgba(255,255,255,0.3)),
-    url("https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80")
-      center/cover no-repeat;
-  filter:saturate(0.1) contrast(1.05);
-  opacity:0.9;
-}
-.hero-panel-grid {
-  position:absolute;
-  inset:10%;
-  border:1px solid rgba(156,163,175,0.7);
-  background-image:
-    linear-gradient(rgba(209,213,219,0.9) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(209,213,219,0.9) 1px,transparent 1px);
-  background-size:40px 40px;
-  opacity:0.5;
-  mix-blend-mode:multiply;
-}
-.hero-panel-scan {
-  position:absolute;
-  top:-40%;
-  left:0; right:0;
-  height:30%;
-  background:linear-gradient(to bottom,transparent,rgba(156,163,175,0.55),transparent);
-  opacity:0.6;
-  mix-blend-mode:multiply;
-  animation:scan 4s linear infinite;
-}
-.hero-panel-content {
-  position:absolute;
-  inset:0;
-  padding:20px 22px;
+  padding: 16px 16px 14px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  gap:10px;
+  overflow:hidden;
+  transform-origin:center;
+  transform-style:preserve-3d;
+  will-change:transform;
+  transition:transform 180ms ease-out, box-shadow 180ms ease-out;
 }
-.hero-panel-title {
-  font-size:0.78rem;
-  text-transform:uppercase;
-  letter-spacing:0.16em;
-  color:#111827;
-}
-.hero-panel-main {
-  font-size:0.9rem;
-  text-transform:uppercase;
-  letter-spacing:0.18em;
-  color:#111827;
-}
-.hero-panel-tags {
+
+.hero-monitor-header {
   display:flex;
-  flex-wrap:wrap;
-  gap:8px;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.hero-monitor-label {
   font-size:0.7rem;
   text-transform:uppercase;
-  letter-spacing:0.14em;
+  letter-spacing:0.16em;
   color:var(--text-soft);
 }
-.hero-panel-tag {
-  padding:3px 7px;
-  border:1px solid rgba(107,114,128,0.7);
-  background:rgba(243,244,246,0.85);
+.hero-monitor-sub {
+  font-size:0.78rem;
+  color:var(--text-muted);
+}
+.hero-monitor-value {
+  font-size:1.2rem;
+  font-weight:600;
+}
+.hero-monitor-value .unit {
+  font-size:0.7rem;
+  color:var(--text-muted);
+  margin-left:4px;
 }
 
-@keyframes scan {
-  from { transform:translateY(0); }
-  to   { transform:translateY(240%); }
+.hero-monitor-body {
+  position:relative;
+  flex:1;
+}
+#demand-chart {
+  position:absolute;
+  inset:0;
 }
 
-/* Platforms */
+.hero-monitor-footer {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:0.72rem;
+  color:var(--text-soft);
+}
+.hero-monitor-status {
+  text-align:right;
+  flex-shrink:0;
+}
+
+/* Platforms / domains */
 
 .platforms {
   padding:40px 5vw 64px;
@@ -534,7 +520,6 @@ footer {
     order:-1;
     justify-self:stretch;
   }
-  .hero-panel { position:relative; }
   .contact-inner { grid-template-columns:minmax(0,1fr); }
 }
 @media (max-width: 768px) {
