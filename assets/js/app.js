@@ -1,12 +1,13 @@
-// --- Helpers ---
+// Utilidades simples
 function qs(sel, parent = document) { return parent.querySelector(sel); }
 function qsa(sel, parent = document) { return Array.from(parent.querySelectorAll(sel)); }
 
-// SPA sencilla con hash + localStorage
 const STORAGE_KEYS = {
   lastView: 'mdei:lastView',
   lastDomain: 'mdei:lastDomain'
 };
+
+// ----- SPA sencilla -----
 
 function setView(name) {
   const views = qsa('.view');
@@ -18,14 +19,12 @@ function setView(name) {
     }
   });
 
-  // nav activa
   const links = qsa('.nav-link');
   links.forEach(link => {
     if (link.dataset.viewTarget === name) link.classList.add('is-active');
     else link.classList.remove('is-active');
   });
 
-  // guarda última vista
   try { localStorage.setItem(STORAGE_KEYS.lastView, name); } catch (e) {}
 }
 
@@ -42,9 +41,9 @@ function initRouter() {
 
   let initial = 'home';
   const hash = location.hash.replace('#','');
-  const saved = (() => {
-    try { return localStorage.getItem(STORAGE_KEYS.lastView) || ''; } catch (e) { return ''; }
-  })();
+  let saved = '';
+  try { saved = localStorage.getItem(STORAGE_KEYS.lastView) || ''; } catch (e) {}
+
   if (hash) initial = hash;
   else if (saved) initial = saved;
 
@@ -56,15 +55,18 @@ function initRouter() {
   });
 }
 
-// Scroll progress + header
+// ----- Scroll progress + header -----
+
 function initScrollEffects() {
   const progressEl = qs('#scroll-progress');
   const headerEl = qs('#site-header');
+  if (!progressEl || !headerEl) return;
 
   function onScroll() {
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = docHeight > 0 ? window.scrollY / docHeight : 0;
     progressEl.style.transform = 'scaleX(' + progress.toFixed(3) + ')';
+
     if (window.scrollY > 10) headerEl.classList.add('is-scrolled');
     else headerEl.classList.remove('is-scrolled');
   }
@@ -73,13 +75,17 @@ function initScrollEffects() {
   onScroll();
 }
 
-// Reveal on scroll
+// ----- Reveal on scroll -----
+
 function initReveal() {
   const elements = qsa('.reveal');
+  if (!elements.length) return;
+
   if (!('IntersectionObserver' in window)) {
     elements.forEach(el => el.classList.add('reveal--visible'));
     return;
   }
+
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -88,10 +94,12 @@ function initReveal() {
       }
     });
   }, { threshold: 0.12 });
+
   elements.forEach(el => observer.observe(el));
 }
 
-// Domain detail + search + remember last domain
+// ----- Domains: detalle + búsqueda -----
+
 function initDomains() {
   const detail = qs('#platform-detail');
   if (!detail) return;
@@ -154,7 +162,6 @@ function initDomains() {
     });
   });
 
-  // search / filtro
   if (searchInput) {
     searchInput.addEventListener('input', () => {
       const q = searchInput.value.toLowerCase().trim();
@@ -165,20 +172,19 @@ function initDomains() {
     });
   }
 
-  // cargar último dominio visto
-  const savedDomain = (() => {
-    try { return localStorage.getItem(STORAGE_KEYS.lastDomain) || ''; } catch (e) { return ''; }
-  })();
+  let savedDomain = '';
+  try { savedDomain = localStorage.getItem(STORAGE_KEYS.lastDomain) || ''; } catch (e) {}
   if (savedDomain && data[savedDomain]) renderDetail(savedDomain);
 }
 
-// Hero parallax
+// ----- Hero parallax (monitor) -----
+
 function initHeroParallax() {
-  const prefersReduced = window.matchMedia &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const prefersReduced =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
 
-  const panel = qs('#hero-panel');
+  const panel = document.getElementById('hero-monitor') || document.getElementById('hero-panel');
   if (!panel) return;
 
   let rect = panel.getBoundingClientRect();
@@ -206,13 +212,154 @@ function initHeroParallax() {
 
   panel.addEventListener('mouseleave', () => {
     panel.style.transform = 'rotateX(0deg) rotateY(0deg)';
-    panel.style.boxShadow = '0 18px 70px rgba(15,23,42,0.12)';
+    panel.style.boxShadow = 'var(--shadow-soft)';
   });
 }
 
-// Init
+// ----- Monitor demanda REE + Chart.js -----
+
+function initDemandChart() {
+  const canvas = document.getElementById('demand-chart');
+  const valueEl = document.getElementById('demand-current');
+  const updatedEl = document.getElementById('demand-updated');
+  const statusEl = document.getElementById('demand-status');
+
+  if (!canvas || !window.Chart) return;
+
+  let chart;
+
+  const pad = n => String(n).padStart(2, '0');
+
+  function fmtIsoNoSeconds(d) {
+    return (
+      d.getFullYear() + '-' +
+      pad(d.getMonth() + 1) + '-' +
+      pad(d.getDate()) + 'T' +
+      pad(d.getHours()) + ':' +
+      pad(d.getMinutes())
+    );
+  }
+
+  const timeFormatter = new Intl.DateTimeFormat('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  async function fetchData() {
+    const now = new Date();
+    const end = new Date(now.getTime() - 15 * 60 * 1000); // 15 min de margen
+    const start = new Date(end.getTime() - 6 * 60 * 60 * 1000); // últimas 6 horas
+
+    const params = new URLSearchParams({
+      start_date: fmtIsoNoSeconds(start),
+      end_date: fmtIsoNoSeconds(end),
+      time_trunc: 'hour'
+    });
+
+    const url = 'https://apidatos.ree.es/es/datos/demanda/demanda-tiempo-real?' +
+                params.toString();
+
+    if (statusEl) statusEl.textContent = 'Actualizando datos…';
+
+    try {
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+
+      const included = json.included || [];
+      const attr = included[0] && included[0].attributes;
+      const series = (attr && attr.values) || [];
+      if (!series.length) throw new Error('Sin datos');
+
+      const labels = series.map(p => new Date(p.datetime));
+      const values = series.map(p => p.value);
+
+      const last = series[series.length - 1];
+      if (last && last.value != null && valueEl) {
+        const mw = Math.round(last.value);
+        valueEl.innerHTML = mw.toLocaleString('es-ES') + ' <span class="unit">MW</span>';
+      }
+      if (last && last.datetime && updatedEl) {
+        const d = new Date(last.datetime);
+        updatedEl.textContent = 'Último dato: ' + timeFormatter.format(d);
+      }
+
+      const chartData = {
+        labels,
+        datasets: [{
+          data: values,
+          tension: 0.35,
+          borderWidth: 2,
+          borderColor: '#111827',
+          pointRadius: 0,
+          fill: false
+        }]
+      };
+
+      const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              title: items => {
+                const idx = items[0].dataIndex;
+                const d = labels[idx];
+                return d ? timeFormatter.format(d) : '';
+              },
+              label: ctx => {
+                const v = ctx.parsed.y;
+                return v.toLocaleString('es-ES') + ' MW';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              maxTicksLimit: 5,
+              callback: (value, idx) => timeFormatter.format(labels[idx])
+            }
+          },
+          y: {
+            grid: { color: 'rgba(209,213,219,0.7)', drawBorder: false },
+            ticks: {
+              maxTicksLimit: 4,
+              callback: v => v.toLocaleString('es-ES') + ' MW'
+            }
+          }
+        }
+      };
+
+      if (!chart) {
+        chart = new Chart(canvas.getContext('2d'), {
+          type: 'line',
+          data: chartData,
+          options
+        });
+      } else {
+        chart.data = chartData;
+        chart.update();
+      }
+
+      if (statusEl) statusEl.textContent = 'Fuente: Red Eléctrica · REData API';
+    } catch (err) {
+      console.error('Error cargando demanda REE', err);
+      if (statusEl) statusEl.textContent = 'No se pueden cargar los datos ahora mismo.';
+    }
+  }
+
+  fetchData();
+  setInterval(fetchData, 5 * 60 * 1000); // cada 5 minutos
+}
+
+// ----- Init -----
+
 document.addEventListener('DOMContentLoaded', () => {
-  // marcamos que JS está activo para que el CSS use el modo SPA
   document.body.classList.add('js-app-ready');
 
   initRouter();
@@ -220,4 +367,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initDomains();
   initHeroParallax();
+  initDemandChart();
 });
