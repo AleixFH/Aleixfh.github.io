@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MDEI — Automation · Robotics · Cybersecurity</title>
   <meta name="description" content="MDEI — Specialists in automation, robotics, and cybersecurity. Based in Barcelona (BCN)." />
-  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
-  <!-- barra de progreso scroll -->
   <div class="scroll-progress" id="scroll-progress"></div>
 
-  <!-- APP SHELL -->
   <header id="site-header">
     <div class="logo">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" aria-hidden="true">
@@ -22,7 +20,6 @@
     </div>
 
     <nav class="nav">
-      <!-- data-view indica qué "pantalla" mostrar -->
       <button class="nav-link" data-view-target="home">Overview</button>
       <button class="nav-link" data-view-target="domains">Domains</button>
       <button class="nav-link" data-view-target="contact">Contact</button>
@@ -31,8 +28,8 @@
 
   <main id="app">
     <!-- VIEW: HOME -->
-    <section class="view view--active" data-view="home">
-      <div class="hero">
+    <section class="view" data-view="home">
+      <div class="hero reveal">
         <div class="hero-inner">
           <div class="hero-copy">
             <h1>Automation · Robotics · Cybersecurity</h1>
@@ -70,41 +67,56 @@
       </div>
     </section>
 
-    <!-- VIEW: DOMAINS (tipo Palantir list) -->
+    <!-- VIEW: DOMAINS -->
     <section class="view" data-view="domains">
-      <section class="platforms">
+      <section class="platforms reveal">
         <div class="platforms-inner">
-          <p class="platforms-label">Domains</p>
+          <div class="platforms-header">
+            <p class="platforms-label">Domains</p>
+            <input
+              id="domain-search"
+              class="platforms-search"
+              type="search"
+              placeholder="Filter domains…"
+              autocomplete="off"
+            />
+          </div>
+
           <div class="platforms-list" id="domains-list">
-            <!-- Las filas se generan también por JS, pero dejo 3 básicas como fallback -->
             <article class="platform-row" data-domain="automation">
               <div class="platform-name">Automation</div>
-              <div class="platform-desc">Control systems, PLC and SCADA for industrial environments.</div>
+              <div class="platform-desc">
+                Control systems, PLC and SCADA for industrial environments.
+              </div>
               <div class="platform-index">/01</div>
               <div class="platform-arrow">→</div>
             </article>
 
             <article class="platform-row" data-domain="robotics">
               <div class="platform-name">Robotics</div>
-              <div class="platform-desc">Integration of robotic cells, conveyors and safety systems.</div>
+              <div class="platform-desc">
+                Integration of robotic cells, conveyors and safety systems.
+              </div>
               <div class="platform-index">/02</div>
               <div class="platform-arrow">→</div>
             </article>
 
             <article class="platform-row" data-domain="cybersecurity">
               <div class="platform-name">Cybersecurity</div>
-              <div class="platform-desc">OT security, segmentation and resilience for critical assets.</div>
+              <div class="platform-desc">
+                OT security, segmentation and resilience for critical assets.
+              </div>
               <div class="platform-index">/03</div>
               <div class="platform-arrow">→</div>
             </article>
           </div>
 
-          <!-- panel de detalle dinámico -->
           <div class="platform-detail" id="platform-detail">
             <h2 class="platform-detail-title">Select a domain</h2>
             <p class="platform-detail-text">
-              Click on Automation, Robotics or Cybersecurity to see a short description here.
+              Click on Automation, Robotics or Cybersecurity to see more detail here.
             </p>
+            <ul class="platform-detail-points" id="platform-detail-points"></ul>
           </div>
         </div>
       </section>
@@ -112,7 +124,7 @@
 
     <!-- VIEW: CONTACT -->
     <section class="view" data-view="contact">
-      <section id="contact">
+      <section id="contact" class="reveal">
         <div class="contact-inner">
           <div>
             <div class="contact-meta">Contact</div>
@@ -123,7 +135,7 @@
           </div>
 
           <div class="contact-panel">
-            <!-- MANTENEMOS TU FORM TAL CUAL -->
+            <!-- Formspree intacto -->
             <form action="https://formspree.io/f/xqawabvr" method="POST">
               <div>
                 <label for="name">Name / Company</label>
@@ -152,6 +164,7 @@
     © 2025 MDEI — Automation · Robotics · Cybersecurity — Barcelona (BCN)
   </footer>
 
-  <script type="module" src="assets/js/app.js"></script>
+  <!-- IMPORTANTE: ruta relativa sin barra inicial -->
+  <script src="./assets/js/app.js"></script>
 </body>
 </html>
