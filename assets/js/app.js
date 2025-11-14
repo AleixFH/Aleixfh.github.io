@@ -1,55 +1,70 @@
-// Cambio de vistas (SPA muy simple)
-function setView(viewName) {
-  const views = document.querySelectorAll('.view');
+// --- Helpers ---
+function qs(sel, parent = document) { return parent.querySelector(sel); }
+function qsa(sel, parent = document) { return Array.from(parent.querySelectorAll(sel)); }
+
+// SPA sencilla con hash + localStorage
+const STORAGE_KEYS = {
+  lastView: 'mdei:lastView',
+  lastDomain: 'mdei:lastDomain'
+};
+
+function setView(name) {
+  const views = qsa('.view');
   views.forEach(v => {
-    if (v.dataset.view === viewName) {
+    if (v.dataset.view === name) {
       v.classList.add('view--active');
     } else {
       v.classList.remove('view--active');
     }
   });
+
+  // nav activa
+  const links = qsa('.nav-link');
+  links.forEach(link => {
+    if (link.dataset.viewTarget === name) link.classList.add('is-active');
+    else link.classList.remove('is-active');
+  });
+
+  // guarda última vista
+  try { localStorage.setItem(STORAGE_KEYS.lastView, name); } catch (e) {}
 }
 
-// Navegación por botones con data-view-target
-function setupNav() {
-  const navButtons = document.querySelectorAll('[data-view-target]');
-  navButtons.forEach(btn => {
+function initRouter() {
+  const buttons = qsa('[data-view-target]');
+  buttons.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.viewTarget;
-      if (target) setView(target);
-      // actualiza hash para que se pueda compartir /domains, /contact, etc.
-      if (target === 'home') {
-        history.replaceState(null, '', './');
-      } else {
-        location.hash = '#' + target;
-      }
+      if (!target) return;
+      location.hash = target === 'home' ? '' : ('#' + target);
+      setView(target);
     });
   });
 
-  // cargar vista desde el hash actual
+  let initial = 'home';
   const hash = location.hash.replace('#','');
-  if (hash === 'domains' || hash === 'contact') {
-    setView(hash);
-  } else {
-    setView('home');
-  }
+  const saved = (() => {
+    try { return localStorage.getItem(STORAGE_KEYS.lastView) || ''; } catch (e) { return ''; }
+  })();
+  if (hash) initial = hash;
+  else if (saved) initial = saved;
+
+  setView(initial);
 
   window.addEventListener('hashchange', () => {
-    const newHash = location.hash.replace('#','') || 'home';
-    setView(newHash);
+    const h = location.hash.replace('#','') || 'home';
+    setView(h);
   });
 }
 
-// Barra de progreso + header shrink
-function setupScrollEffects() {
-  const progressEl = document.getElementById('scroll-progress');
-  const headerEl = document.getElementById('site-header');
+// Scroll progress + header
+function initScrollEffects() {
+  const progressEl = qs('#scroll-progress');
+  const headerEl = qs('#site-header');
 
   function onScroll() {
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const progress = docHeight > 0 ? window.scrollY / docHeight : 0;
     progressEl.style.transform = 'scaleX(' + progress.toFixed(3) + ')';
-
     if (window.scrollY > 10) headerEl.classList.add('is-scrolled');
     else headerEl.classList.remove('is-scrolled');
   }
@@ -58,45 +73,112 @@ function setupScrollEffects() {
   onScroll();
 }
 
-// Panel de detalle para domains
-function setupDomainDetail() {
-  const detail = document.getElementById('platform-detail');
+// Reveal on scroll
+function initReveal() {
+  const elements = qsa('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    elements.forEach(el => el.classList.add('reveal--visible'));
+    return;
+  }
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal--visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  elements.forEach(el => observer.observe(el));
+}
+
+// Domain detail + search + remember last domain
+function initDomains() {
+  const detail = qs('#platform-detail');
   if (!detail) return;
 
-  const detailsData = {
+  const titleEl = qs('.platform-detail-title', detail);
+  const textEl = qs('.platform-detail-text', detail);
+  const pointsEl = qs('#platform-detail-points', detail);
+  const rows = qsa('.platform-row');
+  const searchInput = qs('#domain-search');
+
+  const data = {
     automation: {
       title: 'Automation',
-      text: 'PLC, SCADA and control architectures for production lines and industrial processes.'
+      text: 'PLC, SCADA and control architectures for production lines and industrial processes.',
+      points: [
+        'Design of PLC/SCADA architectures.',
+        'Integration with existing sensors and actuators.',
+        'Migration of legacy control systems.'
+      ]
     },
     robotics: {
       title: 'Robotics',
-      text: 'Integration of industrial robots and cobots with safety, vision and conveyor systems.'
+      text: 'Integration of industrial robots and cobots with conveyors, vision and safety.',
+      points: [
+        'Robot cell design and programming.',
+        'Safe interaction between operators and robots.',
+        'Cycle-time optimisation and diagnostics.'
+      ]
     },
     cybersecurity: {
       title: 'Cybersecurity',
-      text: 'Segmentation, monitoring and resilience for OT networks and critical assets.'
+      text: 'Segmentation, monitoring and resilience for OT networks and critical assets.',
+      points: [
+        'Network zoning and firewalling in OT.',
+        'Monitoring of industrial protocols.',
+        'Incident response and hardening of critical nodes.'
+      ]
     }
   };
 
-  const rows = document.querySelectorAll('.platform-row');
+  function renderDetail(key) {
+    const info = data[key];
+    if (!info) return;
+    titleEl.textContent = info.title;
+    textEl.textContent = info.text;
+    pointsEl.innerHTML = '';
+    info.points.forEach(p => {
+      const li = document.createElement('li');
+      li.textContent = p;
+      pointsEl.appendChild(li);
+    });
+    try { localStorage.setItem(STORAGE_KEYS.lastDomain, key); } catch (e) {}
+  }
+
   rows.forEach(row => {
     row.addEventListener('click', () => {
       const key = row.dataset.domain;
-      const info = detailsData[key];
-      if (!info) return;
-      detail.querySelector('.platform-detail-title').textContent = info.title;
-      detail.querySelector('.platform-detail-text').textContent = info.text;
+      if (!key) return;
+      renderDetail(key);
     });
   });
+
+  // search / filtro
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.toLowerCase().trim();
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  // cargar último dominio visto
+  const savedDomain = (() => {
+    try { return localStorage.getItem(STORAGE_KEYS.lastDomain) || ''; } catch (e) { return ''; }
+  })();
+  if (savedDomain && data[savedDomain]) renderDetail(savedDomain);
 }
 
-// Parallax suave del panel hero
-function setupHeroParallax() {
-  const prefersReducedMotion = window.matchMedia &&
+// Hero parallax
+function initHeroParallax() {
+  const prefersReduced = window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReducedMotion) return;
+  if (prefersReduced) return;
 
-  const panel = document.getElementById('hero-panel');
+  const panel = qs('#hero-panel');
   if (!panel) return;
 
   let rect = panel.getBoundingClientRect();
@@ -128,11 +210,14 @@ function setupHeroParallax() {
   });
 }
 
-// Inicializar todo
+// Init
 document.addEventListener('DOMContentLoaded', () => {
-  setView('home');
-  setupNav();
-  setupScrollEffects();
-  setupDomainDetail();
-  setupHeroParallax();
+  // marcamos que JS está activo para que el CSS use el modo SPA
+  document.body.classList.add('js-app-ready');
+
+  initRouter();
+  initScrollEffects();
+  initReveal();
+  initDomains();
+  initHeroParallax();
 });
