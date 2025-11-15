@@ -1,4 +1,4 @@
-// Utilidades simples
+// Helpers
 function qs(sel, parent = document) { return parent.querySelector(sel); }
 function qsa(sel, parent = document) { return Array.from(parent.querySelectorAll(sel)); }
 
@@ -7,7 +7,7 @@ const STORAGE_KEYS = {
   lastDomain: 'mdei:lastDomain'
 };
 
-// ----- SPA sencilla -----
+// ---------- SPA ----------
 
 function setView(name) {
   const views = qsa('.view');
@@ -22,7 +22,7 @@ function setView(name) {
     else link.classList.remove('is-active');
   });
 
-  try { localStorage.setItem(STORAGE_KEYS.lastView, name); } catch (e) {}
+  try { localStorage.setItem(STORAGE_KEYS.lastView, name); } catch {}
 }
 
 function initRouter() {
@@ -39,7 +39,7 @@ function initRouter() {
   let initial = 'home';
   const hash = location.hash.replace('#','');
   let saved = '';
-  try { saved = localStorage.getItem(STORAGE_KEYS.lastView) || ''; } catch (e) {}
+  try { saved = localStorage.getItem(STORAGE_KEYS.lastView) || ''; } catch {}
 
   if (hash) initial = hash;
   else if (saved) initial = saved;
@@ -52,7 +52,7 @@ function initRouter() {
   });
 }
 
-// ----- Scroll progress + header -----
+// ---------- Scroll / header ----------
 
 function initScrollEffects() {
   const progressEl = qs('#scroll-progress');
@@ -72,7 +72,7 @@ function initScrollEffects() {
   onScroll();
 }
 
-// ----- Reveal on scroll -----
+// ---------- Reveal ----------
 
 function initReveal() {
   const elements = qsa('.reveal');
@@ -95,7 +95,7 @@ function initReveal() {
   elements.forEach(el => observer.observe(el));
 }
 
-// ----- Domains: detalle + búsqueda -----
+// ---------- Domains ----------
 
 function initDomains() {
   const detail = qs('#platform-detail');
@@ -148,7 +148,7 @@ function initDomains() {
       li.textContent = p;
       pointsEl.appendChild(li);
     });
-    try { localStorage.setItem(STORAGE_KEYS.lastDomain, key); } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEYS.lastDomain, key); } catch {}
   }
 
   rows.forEach(row => {
@@ -170,11 +170,11 @@ function initDomains() {
   }
 
   let savedDomain = '';
-  try { savedDomain = localStorage.getItem(STORAGE_KEYS.lastDomain) || ''; } catch (e) {}
+  try { savedDomain = localStorage.getItem(STORAGE_KEYS.lastDomain) || ''; } catch {}
   if (savedDomain && data[savedDomain]) renderDetail(savedDomain);
 }
 
-// ----- Hero parallax (monitor) -----
+// ---------- Hero parallax ----------
 
 function initHeroParallax() {
   const prefersReduced =
@@ -213,31 +213,25 @@ function initHeroParallax() {
   });
 }
 
-// ----- Monitor SCADA simulado con Chart.js -----
+// ---------- Dashboard simulado (multi-widget) ----------
 
-function initDemandChartSimulated() {
-  const canvas = document.getElementById('demand-chart');
-  const valueEl = document.getElementById('demand-current');
-  const updatedEl = document.getElementById('demand-updated');
-  const statusEl = document.getElementById('demand-status');
+function initDashboardSimulated() {
+  if (!window.Chart) return;
 
-  if (!canvas || !window.Chart) return;
+  const gaugeCanvas = qs('#chart-gauge');
+  const barsCanvas = qs('#chart-bars');
+  const radarCanvas = qs('#chart-radar');
+  const trendCanvas = qs('#chart-trend');
 
-  const ctx = canvas.getContext('2d');
+  if (!gaugeCanvas || !barsCanvas || !radarCanvas || !trendCanvas) return;
 
-  const maxPoints = 60; // últimos 60 segundos
-  const labels = [];
-  const values = [];
-
-  let base = 26000; // MW aproximados
-
-  const now = Date.now();
-  for (let i = maxPoints - 1; i >= 0; i--) {
-    const t = new Date(now - i * 1000);
-    labels.push(t);
-    base += (Math.random() - 0.5) * 200;
-    values.push(base);
-  }
+  const loadEl = qs('#metric-load');
+  const prodEl = qs('#metric-production');
+  const statusEl = qs('#metric-status');
+  const outputEl = qs('#metric-output');
+  const gaugeValueEl = qs('#gauge-value');
+  const updatedEl = qs('#demand-updated');
+  const stateEl = qs('#demand-status');
 
   const timeFormatter = new Intl.DateTimeFormat('es-ES', {
     hour: '2-digit',
@@ -245,102 +239,240 @@ function initDemandChartSimulated() {
     second: '2-digit'
   });
 
-  const data = {
-    labels,
-    datasets: [{
-      data: values,
-      tension: 0.35,
-      borderWidth: 2,
-      borderColor: '#111827',
-      pointRadius: 0,
-      fill: false
-    }]
-  };
+  // Valores base
+  let production = 51;
+  let jobStatus = 59;
+  let output = 42;
+  let load = 72;
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-        callbacks: {
-          title: items => {
-            const idx = items[0].dataIndex;
-            const d = labels[idx];
-            return d ? timeFormatter.format(d) : '';
-          },
-          label: ctx => {
-            const v = ctx.parsed.y;
-            return v.toFixed(0).toLocaleString('es-ES') + ' MW';
-          }
-        }
-      }
+  // Serie de tendencia
+  const maxPoints = 60;
+  const trendLabels = [];
+  const trendValues = [];
+
+  const now = Date.now();
+  for (let i = maxPoints - 1; i >= 0; i--) {
+    const t = new Date(now - i * 1000);
+    trendLabels.push(t);
+    load += (Math.random() - 0.5) * 2.5;
+    trendValues.push(load);
+  }
+
+  function randAround(base, amp) {
+    return base + (Math.random() - 0.5) * amp;
+  }
+
+  // Gauge (utilisation)
+  const gaugeChart = new Chart(gaugeCanvas.getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Used', 'Free'],
+      datasets: [{
+        data: [jobStatus, 100 - jobStatus],
+        backgroundColor: ['#111827', 'rgba(17,24,39,0.08)'],
+        borderWidth: 0
+      }]
     },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: {
-          maxTicksLimit: 5,
-          callback: (value, idx) => timeFormatter.format(labels[idx])
-        }
-      },
-      y: {
-        grid: { color: 'rgba(209,213,219,0.7)', drawBorder: false },
-        ticks: {
-          maxTicksLimit: 4,
-          callback: v => v.toLocaleString('es-ES') + ' MW'
-        }
+    options: {
+      rotation: -135 * (Math.PI / 180),
+      circumference: 270 * (Math.PI / 180),
+      cutout: '70%',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
       }
-    },
-    animation: {
-      duration: 200
     }
-  };
-
-  const chart = new Chart(ctx, {
-    type: 'line',
-    data,
-    options
   });
 
-  function updateValue(v, t) {
-    if (valueEl) {
-      valueEl.innerHTML = Math.round(v).toLocaleString('es-ES') +
-        '<span class="unit"> MW</span>';
+  // Barras (demand)
+  const barsChart = new Chart(barsCanvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['Line A', 'Line B', 'Line C'],
+      datasets: [{
+        data: [70, 29, 41],
+        backgroundColor: 'rgba(17,24,39,0.12)',
+        borderColor: '#111827',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { display: false }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 9 } }
+        }
+      }
     }
-    if (updatedEl) {
-      updatedEl.textContent = 'Updated: ' + timeFormatter.format(t);
+  });
+
+  // Radar (KPI balance)
+  const radarChart = new Chart(radarCanvas.getContext('2d'), {
+    type: 'radar',
+    data: {
+      labels: ['KPI 1', 'KPI 2', 'KPI 3', 'KPI 4'],
+      datasets: [{
+        data: [70, 55, 64, 48],
+        borderColor: '#111827',
+        backgroundColor: 'rgba(17,24,39,0.07)',
+        borderWidth: 1,
+        pointRadius: 1.5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      },
+      scales: {
+        r: {
+          angleLines: { color: 'rgba(156,163,175,0.5)' },
+          grid: { color: 'rgba(209,213,219,0.7)' },
+          suggestedMin: 0,
+          suggestedMax: 100,
+          ticks: { display: false },
+          pointLabels: { font: { size: 9 } }
+        }
+      }
+    }
+  });
+
+  // Trend line
+  const trendChart = new Chart(trendCanvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: trendLabels,
+      datasets: [{
+        data: trendValues,
+        tension: 0.35,
+        borderWidth: 2,
+        borderColor: '#111827',
+        pointRadius: 0,
+        fill: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            title: items => {
+              const idx = items[0].dataIndex;
+              const d = trendLabels[idx];
+              return d ? timeFormatter.format(d) : '';
+            },
+            label: ctx => ctx.parsed.y.toFixed(1) + ' % load'
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            maxTicksLimit: 4,
+            callback: (value, idx) => timeFormatter.format(trendLabels[idx])
+          }
+        },
+        y: {
+          grid: { color: 'rgba(209,213,219,0.7)', drawBorder: false },
+          ticks: {
+            maxTicksLimit: 3,
+            callback: v => v.toFixed(0) + ' %'
+          }
+        }
+      },
+      animation: { duration: 200 }
+    }
+  });
+
+  // Actualiza numeritos y estado
+  function updateReadouts(vLoad, vProd, vStatus, vOutput, t) {
+    if (loadEl) {
+      loadEl.innerHTML = Math.round(vLoad) +
+        '<span class="unit"> % load</span>';
+    }
+    if (prodEl) prodEl.textContent = vProd.toFixed(1);
+    if (statusEl) statusEl.textContent = vStatus.toFixed(0) + '%';
+    if (outputEl) outputEl.textContent = vOutput.toFixed(1);
+    if (gaugeValueEl) gaugeValueEl.textContent = vStatus.toFixed(0) + '%';
+    if (updatedEl) updatedEl.textContent = 'Updated: ' + timeFormatter.format(t);
+
+    if (stateEl) {
+      let state = 'Normal';
+      if (vStatus > 85 || vLoad > 90) state = 'High load';
+      else if (vStatus < 35 || vLoad < 40) state = 'Low load';
+      stateEl.textContent = state + ' · Live simulation · 1s refresh';
     }
   }
 
-  if (statusEl) statusEl.textContent = 'Live simulation · 1s refresh';
+  const lastTime = trendLabels[trendLabels.length - 1];
+  updateReadouts(load, production, jobStatus, output, lastTime);
 
-  updateValue(values[values.length - 1], labels[labels.length - 1]);
-
+  // Tick de simulación
   setInterval(() => {
-    const last = values[values.length - 1];
-    let next = last + (Math.random() - 0.5) * 300;
-    // límites para que no se vaya de madre
-    next = Math.max(23000, Math.min(34000, next));
-
     const t = new Date();
 
-    labels.push(t);
-    values.push(next);
-    if (labels.length > maxPoints) labels.shift();
-    if (values.length > maxPoints) values.shift();
+    // random walk suave
+    production = randAround(production, 1.4);
+    jobStatus = Math.max(0, Math.min(100, randAround(jobStatus, 2.8)));
+    output = randAround(output, 1.5);
+    load = Math.max(30, Math.min(100, randAround(load, 2.0)));
 
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = values;
-    chart.update('none');
+    // actualizar tendencias
+    trendLabels.push(t);
+    trendValues.push(load);
+    if (trendLabels.length > maxPoints) trendLabels.shift();
+    if (trendValues.length > maxPoints) trendValues.shift();
 
-    updateValue(next, t);
+    trendChart.data.labels = trendLabels;
+    trendChart.data.datasets[0].data = trendValues;
+    trendChart.update('none');
+
+    // gauge
+    gaugeChart.data.datasets[0].data = [jobStatus, 100 - jobStatus];
+    gaugeChart.update('none');
+
+    // barras
+    barsChart.data.datasets[0].data = [
+      Math.max(0, randAround(70, 5)),
+      Math.max(0, randAround(29, 4)),
+      Math.max(0, randAround(41, 4))
+    ];
+    barsChart.update('none');
+
+    // radar
+    radarChart.data.datasets[0].data = [
+      Math.max(0, Math.min(100, randAround(70, 5))),
+      Math.max(0, Math.min(100, randAround(55, 6))),
+      Math.max(0, Math.min(100, randAround(64, 4))),
+      Math.max(0, Math.min(100, randAround(48, 7)))
+    ];
+    radarChart.update('none');
+
+    updateReadouts(load, production, jobStatus, output, t);
   }, 1000);
 }
 
-// ----- Init -----
+// ---------- Init ----------
 
 document.addEventListener('DOMContentLoaded', () => {
   document.body.classList.add('js-app-ready');
@@ -350,5 +482,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   initDomains();
   initHeroParallax();
-  initDemandChartSimulated();
+  initDashboardSimulated();
 });
