@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
-  <!-- Barra de progreso de scroll -->
+  <!-- Scroll progress -->
   <div class="scroll-progress" id="scroll-progress"></div>
 
   <!-- HEADER -->
@@ -33,7 +33,7 @@
     <section class="view" data-view="home">
       <section class="hero reveal">
         <div class="hero-inner">
-          <!-- Columna texto -->
+          <!-- Texto -->
           <div class="hero-copy">
             <h1>Automation · Robotics · Cybersecurity</h1>
             <p class="hero-sub">Industrial integration and resilience.</p>
@@ -50,14 +50,16 @@
             </div>
           </div>
 
-          <!-- Columna panel SCADA -->
+          <!-- Panel SCADA -->
           <div class="hero-dashboard">
             <div class="scada-panel" id="scada-panel">
-              <!-- Cabecera del panel -->
+              <!-- Cabecera -->
               <div class="scada-header">
                 <div>
-                  <div class="scada-header-label">SPAIN · INDUSTRIAL OT</div>
-                  <div class="scada-header-sub">Live plant snapshot (demo)</div>
+                  <div class="scada-header-label">SPAIN · SMART PLANT</div>
+                  <div class="scada-header-sub">
+                    Real-time supervision, forecasting & optimisation.
+                  </div>
                 </div>
                 <div class="scada-header-load" id="metric-load">--</div>
               </div>
@@ -65,19 +67,19 @@
               <!-- Fila 1: métricas -->
               <div class="scada-row scada-row-top">
                 <div class="scada-tile scada-tile-metric">
-                  <div class="metric-label">Production</div>
+                  <div class="metric-label">Current output</div>
                   <div class="metric-value" id="metric-production">--</div>
-                  <div class="metric-unit">Units</div>
+                  <div class="metric-unit">Units / h</div>
                 </div>
 
                 <div class="scada-tile scada-tile-metric">
-                  <div class="metric-label">Job status</div>
+                  <div class="metric-label">Line efficiency</div>
                   <div class="metric-value" id="metric-job">--%</div>
-                  <div class="metric-unit">R1 / R2</div>
+                  <div class="metric-unit">OEE proxy</div>
                 </div>
 
                 <div class="scada-tile scada-tile-metric">
-                  <div class="metric-label">Output</div>
+                  <div class="metric-label">Power demand</div>
                   <div class="metric-value" id="metric-output">--</div>
                   <div class="metric-unit">kW</div>
                 </div>
@@ -86,7 +88,7 @@
               <!-- Fila 2: barras + radar -->
               <div class="scada-row scada-row-mid">
                 <div class="scada-tile">
-                  <div class="tile-title">Demand</div>
+                  <div class="tile-title">Demand by line</div>
                   <div class="tile-chart">
                     <canvas id="chart-bars"></canvas>
                   </div>
@@ -103,14 +105,14 @@
               <!-- Fila 3: tendencia -->
               <div class="scada-row scada-row-bottom">
                 <div class="scada-tile scada-tile-trend">
-                  <div class="tile-title">Analysis · Trend</div>
+                  <div class="tile-title">Utilisation trend</div>
                   <div class="tile-chart tile-chart-trend">
                     <canvas id="chart-trend"></canvas>
                   </div>
                 </div>
               </div>
 
-              <!-- Pie del panel -->
+              <!-- Pie -->
               <div class="scada-footer">
                 <span id="scada-updated">Updated: --</span>
                 <span id="scada-status">Live simulation · 1s refresh</span>
