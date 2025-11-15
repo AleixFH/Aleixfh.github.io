@@ -1,5 +1,5 @@
 // Utilidades
-const $ = (sel, parent = document) => parent.querySelector(sel);
+const $  = (sel, parent = document) => parent.querySelector(sel);
 const $$ = (sel, parent = document) => Array.from(parent.querySelectorAll(sel));
 
 const STORAGE_KEYS = {
@@ -7,7 +7,7 @@ const STORAGE_KEYS = {
   lastDomain: 'mdei:lastDomain'
 };
 
-// ---------- SPA básica ----------
+// ---------- SPA ----------
 
 function setView(name) {
   $$('.view').forEach(v => {
@@ -98,11 +98,11 @@ function initDomains() {
   const detail = $('#platform-detail');
   if (!detail) return;
 
-  const titleEl = $('.platform-detail-title', detail);
-  const textEl = $('.platform-detail-text', detail);
+  const titleEl  = $('.platform-detail-title', detail);
+  const textEl   = $('.platform-detail-text', detail);
   const pointsEl = $('#platform-detail-points', detail);
-  const rows = $$('.platform-row');
-  const searchInput = $('#domain-search');
+  const rows     = $$('.platform-row');
+  const search   = $('#domain-search');
 
   const data = {
     automation: {
@@ -138,8 +138,8 @@ function initDomains() {
     const info = data[key];
     if (!info) return;
     titleEl.textContent = info.title;
-    textEl.textContent = info.text;
-    pointsEl.innerHTML = '';
+    textEl.textContent  = info.text;
+    pointsEl.innerHTML  = '';
     info.points.forEach(p => {
       const li = document.createElement('li');
       li.textContent = p;
@@ -156,9 +156,9 @@ function initDomains() {
     });
   });
 
-  if (searchInput) {
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.toLowerCase().trim();
+  if (search) {
+    search.addEventListener('input', () => {
+      const q = search.value.toLowerCase().trim();
       rows.forEach(row => {
         const t = row.innerText.toLowerCase();
         row.style.display = t.includes(q) ? '' : 'none';
@@ -171,7 +171,7 @@ function initDomains() {
   if (stored && data[stored]) renderDetail(stored);
 }
 
-// ---------- Parallax panel suave ----------
+// ---------- Parallax panel ----------
 
 function initPanelParallax() {
   const panel = $('#scada-panel');
@@ -205,7 +205,7 @@ function initPanelParallax() {
   });
 }
 
-// ---------- Dashboard simulado (suave) ----------
+// ---------- Dashboard simulado ----------
 
 function initDashboard() {
   if (!window.Chart) return;
@@ -223,24 +223,23 @@ function initDashboard() {
   const updEl    = $('#scada-updated');
   const statusEl = $('#scada-status');
 
-  // Estado base
-  let production = 50;
-  let jobStatus  = 60;
-  let output     = 45;
-  let load       = 75;
+  // Estado inicial (fábrica española)
+  let production = 52; // units/h
+  let jobStatus  = 68; // %
+  let output     = 46; // kW
+  let load       = 74; // %
 
-  let demand = [70, 30, 40];
-  let kpi    = [70, 55, 65, 50];
+  let demand = [72, 34, 41];          // 3 líneas
+  let kpi    = [72, 58, 66, 52];      // 4 KPIs
 
-  // Helpers
   const randAround = (base, amp) =>
     base + (Math.random() - 0.5) * amp;
 
   const clamp = (v, min, max) =>
     Math.max(min, Math.min(max, v));
 
-  // ---- Trend ----
-  const maxPoints = 60;
+  // ---- Tendencia ----
+  const maxPoints   = 60;
   const trendLabels = Array.from({ length: maxPoints }, (_, i) => i);
   const trendValues = trendLabels.map(() => load + (Math.random() - 0.5) * 2);
 
@@ -283,7 +282,7 @@ function initDashboard() {
     }
   });
 
-  // ---- Barras ----
+  // ---- Barras (demanda por línea) ----
   const barsChart = new Chart(barsCanvas.getContext('2d'), {
     type: 'bar',
     data: {
@@ -320,11 +319,11 @@ function initDashboard() {
     }
   });
 
-  // ---- Radar ----
+  // ---- Radar (equilibrio de KPIs) ----
   const radarChart = new Chart(radarCanvas.getContext('2d'), {
     type: 'radar',
     data: {
-      labels: ['KPI 1', 'KPI 2', 'KPI 3', 'KPI 4'],
+      labels: ['Throughput', 'Quality', 'Energy', 'Availability'],
       datasets: [{
         data: kpi,
         borderColor: '#111827',
@@ -357,7 +356,7 @@ function initDashboard() {
     }
   });
 
-  // ---- Actualizar numeritos ----
+  // ---- Actualizar texto ----
   function updateText(now) {
     if (loadEl)
       loadEl.innerHTML = `${Math.round(load)}<span class="unit">% load</span>`;
@@ -369,26 +368,26 @@ function initDashboard() {
       outEl.textContent = output.toFixed(1);
 
     if (updEl)
-      updEl.textContent = `Updated: ${now.toLocaleTimeString('es-ES')}`;
+      updEl.textContent = `Updated: ${now.toLocaleTimeString('en-GB')}`;
 
     if (statusEl) {
       let state = 'Normal';
       if (jobStatus > 85 || load > 90) state = 'High load';
-      else if (jobStatus < 40 || load < 50) state = 'Low load';
-      statusEl.textContent = `${state} · Live simulation · 1s refresh`;
+      else if (jobStatus < 45 || load < 55) state = 'Low load';
+      statusEl.textContent = `${state} · Supervisory, forecasting & optimisation`;
     }
   }
 
-  // Inicial
   updateText(new Date());
 
   // ---- Bucle de simulación ----
   setInterval(() => {
     const now = new Date();
 
+    // Salidas y KPIs se mueven suave
     production = clamp(randAround(production, 0.6), 40, 65);
-    jobStatus  = clamp(randAround(jobStatus, 1.2), 35, 95);
-    output     = clamp(randAround(output, 0.8), 35, 60);
+    jobStatus  = clamp(randAround(jobStatus, 1.1), 40, 95);
+    output     = clamp(randAround(output, 0.7), 35, 60);
     load       = clamp(randAround(load, 0.8), 50, 95);
 
     demand = demand.map((v, idx) => {
@@ -396,9 +395,9 @@ function initDashboard() {
       return clamp(randAround(v, amp), 10, 100);
     });
 
-    kpi = kpi.map(v => clamp(randAround(v, 2.5), 30, 100));
+    kpi = kpi.map(v => clamp(randAround(v, 2.3), 40, 100));
 
-    // Trend
+    // Tendencia
     trendValues.push(load);
     if (trendValues.length > maxPoints) trendValues.shift();
     trendChart.data.datasets[0].data = trendValues;
