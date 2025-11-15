@@ -296,7 +296,7 @@ body.js-ready .view.view--active {
   min-width: 0;
 }
 
-/* Métricas numéricas */
+/* Métricas */
 
 .scada-tile-metric {
   padding-top: 8px;
@@ -344,7 +344,7 @@ body.js-ready .view.view--active {
   display: block;
 }
 
-/* Footer panel */
+/* Pie panel */
 
 .scada-footer {
   display: flex;
