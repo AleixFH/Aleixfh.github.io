@@ -47,28 +47,75 @@
             </div>
           </div>
 
-          <!-- PANEL SCADA SIMULADO -->
+          <!-- MINI-SCADA DASHBOARD -->
           <div class="hero-visual">
             <div class="hero-monitor" id="hero-monitor">
+              <!-- Cabecera -->
               <div class="hero-monitor-header">
                 <div>
-                  <div class="hero-monitor-label">Spain · Industrial load</div>
-                  <div class="hero-monitor-sub">Live signal (demo)</div>
+                  <div class="hero-monitor-label">Spain · Industrial OT</div>
+                  <div class="hero-monitor-sub">Live plant snapshot (demo)</div>
                 </div>
-                <div class="hero-monitor-value" id="demand-current">--</div>
+                <div class="hero-monitor-value" id="metric-load">--</div>
               </div>
 
-              <div class="hero-monitor-body">
-                <canvas id="demand-chart"
-                        aria-label="Simulated industrial load signal"
-                        role="img"></canvas>
+              <!-- Métricas numéricas -->
+              <div class="hm-metrics">
+                <div class="hm-metric">
+                  <div class="hm-metric-label">Production</div>
+                  <div class="hm-metric-value" id="metric-production">--</div>
+                  <div class="hm-metric-unit">Units</div>
+                </div>
+                <div class="hm-metric">
+                  <div class="hm-metric-label">Job status</div>
+                  <div class="hm-metric-value" id="metric-status">--%</div>
+                  <div class="hm-metric-unit">R1 / R2</div>
+                </div>
+                <div class="hm-metric">
+                  <div class="hm-metric-label">Output</div>
+                  <div class="hm-metric-value" id="metric-output">--</div>
+                  <div class="hm-metric-unit">kW</div>
+                </div>
               </div>
 
-              <div class="hero-monitor-footer">
-                <span id="demand-updated">Updated: --</span>
-                <span class="hero-monitor-status" id="demand-status">
-                  Initialising…
-                </span>
+              <!-- Widgets centrales -->
+              <div class="hm-mid">
+                <!-- Gauge -->
+                <div class="hm-tile hm-tile-gauge">
+                  <div class="hm-tile-label">Utilisation</div>
+                  <div class="hm-gauge-wrapper">
+                    <canvas id="chart-gauge"></canvas>
+                    <div class="hm-gauge-center" id="gauge-value">--%</div>
+                  </div>
+                </div>
+
+                <!-- Barras -->
+                <div class="hm-tile hm-tile-bars">
+                  <div class="hm-tile-label">Demand</div>
+                  <canvas id="chart-bars"></canvas>
+                </div>
+
+                <!-- Radar -->
+                <div class="hm-tile hm-tile-radar">
+                  <div class="hm-tile-label">KPI balance</div>
+                  <canvas id="chart-radar"></canvas>
+                </div>
+              </div>
+
+              <!-- Trend + estado -->
+              <div class="hm-bottom">
+                <div class="hm-tile hm-tile-trend">
+                  <div class="hm-tile-label">Analysis · Trend</div>
+                  <div class="hm-trend-body">
+                    <canvas id="chart-trend"></canvas>
+                  </div>
+                </div>
+                <div class="hero-monitor-footer">
+                  <span id="demand-updated">Updated: --</span>
+                  <span class="hero-monitor-status" id="demand-status">
+                    Live simulation · 1s refresh
+                  </span>
+                </div>
               </div>
             </div>
           </div>
