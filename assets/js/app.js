@@ -1,33 +1,30 @@
-// Helpers
-function qs(sel, parent = document) { return parent.querySelector(sel); }
-function qsa(sel, parent = document) { return Array.from(parent.querySelectorAll(sel)); }
+// Utilidades
+const $ = (sel, parent = document) => parent.querySelector(sel);
+const $$ = (sel, parent = document) => Array.from(parent.querySelectorAll(sel));
 
 const STORAGE_KEYS = {
   lastView: 'mdei:lastView',
   lastDomain: 'mdei:lastDomain'
 };
 
-// ---------- SPA ----------
+// ---------- SPA básica ----------
 
 function setView(name) {
-  const views = qsa('.view');
-  views.forEach(v => {
+  $$('.view').forEach(v => {
     if (v.dataset.view === name) v.classList.add('view--active');
     else v.classList.remove('view--active');
   });
 
-  const links = qsa('.nav-link');
-  links.forEach(link => {
-    if (link.dataset.viewTarget === name) link.classList.add('is-active');
-    else link.classList.remove('is-active');
+  $$('.nav-link').forEach(btn => {
+    if (btn.dataset.viewTarget === name) btn.classList.add('is-active');
+    else btn.classList.remove('is-active');
   });
 
   try { localStorage.setItem(STORAGE_KEYS.lastView, name); } catch {}
 }
 
 function initRouter() {
-  const buttons = qsa('[data-view-target]');
-  buttons.forEach(btn => {
+  $$('.nav-link, [data-view-target]').forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.viewTarget;
       if (!target) return;
@@ -38,34 +35,34 @@ function initRouter() {
 
   let initial = 'home';
   const hash = location.hash.replace('#','');
-  let saved = '';
-  try { saved = localStorage.getItem(STORAGE_KEYS.lastView) || ''; } catch {}
+  let stored = '';
+  try { stored = localStorage.getItem(STORAGE_KEYS.lastView) || ''; } catch {}
 
   if (hash) initial = hash;
-  else if (saved) initial = saved;
+  else if (stored) initial = stored;
 
   setView(initial);
 
   window.addEventListener('hashchange', () => {
-    const h = location.hash.replace('#','') || 'home';
-    setView(h);
+    const target = location.hash.replace('#','') || 'home';
+    setView(target);
   });
 }
 
 // ---------- Scroll / header ----------
 
 function initScrollEffects() {
-  const progressEl = qs('#scroll-progress');
-  const headerEl = qs('#site-header');
-  if (!progressEl || !headerEl) return;
+  const bar = $('#scroll-progress');
+  const header = $('#site-header');
+  if (!bar || !header) return;
 
   function onScroll() {
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = docHeight > 0 ? window.scrollY / docHeight : 0;
-    progressEl.style.transform = 'scaleX(' + progress.toFixed(3) + ')';
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const p = h > 0 ? window.scrollY / h : 0;
+    bar.style.transform = `scaleX(${p.toFixed(3)})`;
 
-    if (window.scrollY > 10) headerEl.classList.add('is-scrolled');
-    else headerEl.classList.remove('is-scrolled');
+    if (window.scrollY > 10) header.classList.add('is-scrolled');
+    else header.classList.remove('is-scrolled');
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -75,37 +72,37 @@ function initScrollEffects() {
 // ---------- Reveal ----------
 
 function initReveal() {
-  const elements = qsa('.reveal');
-  if (!elements.length) return;
+  const els = $$('.reveal');
+  if (!els.length) return;
 
   if (!('IntersectionObserver' in window)) {
-    elements.forEach(el => el.classList.add('reveal--visible'));
+    els.forEach(el => el.classList.add('reveal--visible'));
     return;
   }
 
   const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('reveal--visible');
-        observer.unobserve(entry.target);
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('reveal--visible');
+        observer.unobserve(e.target);
       }
     });
   }, { threshold: 0.12 });
 
-  elements.forEach(el => observer.observe(el));
+  els.forEach(el => observer.observe(el));
 }
 
 // ---------- Domains ----------
 
 function initDomains() {
-  const detail = qs('#platform-detail');
+  const detail = $('#platform-detail');
   if (!detail) return;
 
-  const titleEl = qs('.platform-detail-title', detail);
-  const textEl = qs('.platform-detail-text', detail);
-  const pointsEl = qs('#platform-detail-points', detail);
-  const rows = qsa('.platform-row');
-  const searchInput = qs('#domain-search');
+  const titleEl = $('.platform-detail-title', detail);
+  const textEl = $('.platform-detail-text', detail);
+  const pointsEl = $('#platform-detail-points', detail);
+  const rows = $$('.platform-row');
+  const searchInput = $('#domain-search');
 
   const data = {
     automation: {
@@ -163,48 +160,43 @@ function initDomains() {
     searchInput.addEventListener('input', () => {
       const q = searchInput.value.toLowerCase().trim();
       rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(q) ? '' : 'none';
+        const t = row.innerText.toLowerCase();
+        row.style.display = t.includes(q) ? '' : 'none';
       });
     });
   }
 
-  let savedDomain = '';
-  try { savedDomain = localStorage.getItem(STORAGE_KEYS.lastDomain) || ''; } catch {}
-  if (savedDomain && data[savedDomain]) renderDetail(savedDomain);
+  let stored = '';
+  try { stored = localStorage.getItem(STORAGE_KEYS.lastDomain) || ''; } catch {}
+  if (stored && data[stored]) renderDetail(stored);
 }
 
-// ---------- Hero parallax ----------
+// ---------- Parallax panel suave ----------
 
-function initHeroParallax() {
+function initPanelParallax() {
+  const panel = $('#scada-panel');
+  if (!panel) return;
+
   const prefersReduced =
     window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return;
 
-  const panel = qs('#hero-monitor');
-  if (!panel) return;
-
   let rect = panel.getBoundingClientRect();
-  let width = rect.width;
-  let height = rect.height;
+  let w = rect.width, h = rect.height;
 
   function updateRect() {
     rect = panel.getBoundingClientRect();
-    width = rect.width;
-    height = rect.height;
+    w = rect.width; h = rect.height;
   }
-
   window.addEventListener('resize', updateRect);
 
   window.addEventListener('pointermove', e => {
-    const x = (e.clientX - (rect.left + width / 2)) / width;
-    const y = (e.clientY - (rect.top + height / 2)) / height;
-    const rotateX = y * -6;
-    const rotateY = x * 6;
-
-    panel.style.transform =
-      'rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg)';
-    panel.style.boxShadow = '0 24px 80px rgba(15,23,42,0.2)';
+    const x = (e.clientX - (rect.left + w / 2)) / w;
+    const y = (e.clientY - (rect.top + h / 2)) / h;
+    const rx = y * -5;
+    const ry = x * 5;
+    panel.style.transform = `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+    panel.style.boxShadow = '0 24px 80px rgba(15,23,42,0.26)';
   });
 
   panel.addEventListener('mouseleave', () => {
@@ -213,86 +205,91 @@ function initHeroParallax() {
   });
 }
 
-// ---------- Dashboard simulado (multi-widget) ----------
+// ---------- Dashboard simulado (suave) ----------
 
-function initDashboardSimulated() {
+function initDashboard() {
   if (!window.Chart) return;
 
-  const gaugeCanvas = qs('#chart-gauge');
-  const barsCanvas = qs('#chart-bars');
-  const radarCanvas = qs('#chart-radar');
-  const trendCanvas = qs('#chart-trend');
+  const barsCanvas  = $('#chart-bars');
+  const radarCanvas = $('#chart-radar');
+  const trendCanvas = $('#chart-trend');
 
-  if (!gaugeCanvas || !barsCanvas || !radarCanvas || !trendCanvas) return;
+  if (!barsCanvas || !radarCanvas || !trendCanvas) return;
 
-  const loadEl = qs('#metric-load');
-  const prodEl = qs('#metric-production');
-  const statusEl = qs('#metric-status');
-  const outputEl = qs('#metric-output');
-  const gaugeValueEl = qs('#gauge-value');
-  const updatedEl = qs('#demand-updated');
-  const stateEl = qs('#demand-status');
+  const loadEl   = $('#metric-load');
+  const prodEl   = $('#metric-production');
+  const jobEl    = $('#metric-job');
+  const outEl    = $('#metric-output');
+  const updEl    = $('#scada-updated');
+  const statusEl = $('#scada-status');
 
-  const timeFormatter = new Intl.DateTimeFormat('es-ES', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  });
+  // Estado base
+  let production = 50;
+  let jobStatus  = 60;
+  let output     = 45;
+  let load       = 75;
 
-  // Valores base
-  let production = 51;
-  let jobStatus = 59;
-  let output = 42;
-  let load = 72;
+  let demand = [70, 30, 40];
+  let kpi    = [70, 55, 65, 50];
 
-  // Serie de tendencia
+  // Helpers
+  const randAround = (base, amp) =>
+    base + (Math.random() - 0.5) * amp;
+
+  const clamp = (v, min, max) =>
+    Math.max(min, Math.min(max, v));
+
+  // ---- Trend ----
   const maxPoints = 60;
-  const trendLabels = [];
-  const trendValues = [];
+  const trendLabels = Array.from({ length: maxPoints }, (_, i) => i);
+  const trendValues = trendLabels.map(() => load + (Math.random() - 0.5) * 2);
 
-  const now = Date.now();
-  for (let i = maxPoints - 1; i >= 0; i--) {
-    const t = new Date(now - i * 1000);
-    trendLabels.push(t);
-    load += (Math.random() - 0.5) * 2.5;
-    trendValues.push(load);
-  }
-
-  function randAround(base, amp) {
-    return base + (Math.random() - 0.5) * amp;
-  }
-
-  // Gauge (utilisation)
-  const gaugeChart = new Chart(gaugeCanvas.getContext('2d'), {
-    type: 'doughnut',
+  const trendChart = new Chart(trendCanvas.getContext('2d'), {
+    type: 'line',
     data: {
-      labels: ['Used', 'Free'],
+      labels: trendLabels,
       datasets: [{
-        data: [jobStatus, 100 - jobStatus],
-        backgroundColor: ['#111827', 'rgba(17,24,39,0.08)'],
-        borderWidth: 0
+        data: trendValues,
+        tension: 0.45,
+        borderWidth: 2,
+        borderColor: '#111827',
+        pointRadius: 0,
+        fill: false
       }]
     },
     options: {
-      rotation: -135 * (Math.PI / 180),
-      circumference: 270 * (Math.PI / 180),
-      cutout: '70%',
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         tooltip: { enabled: false }
+      },
+      scales: {
+        x: {
+          display: false
+        },
+        y: {
+          grid: { color: 'rgba(209,213,219,0.7)', drawBorder: false },
+          ticks: {
+            maxTicksLimit: 3,
+            callback: v => v.toFixed(0) + ' %'
+          }
+        }
+      },
+      animation: {
+        duration: 550,
+        easing: 'easeOutCubic'
       }
     }
   });
 
-  // Barras (demand)
+  // ---- Barras ----
   const barsChart = new Chart(barsCanvas.getContext('2d'), {
     type: 'bar',
     data: {
       labels: ['Line A', 'Line B', 'Line C'],
       datasets: [{
-        data: [70, 29, 41],
+        data: demand,
         backgroundColor: 'rgba(17,24,39,0.12)',
         borderColor: '#111827',
         borderWidth: 1
@@ -315,17 +312,21 @@ function initDashboardSimulated() {
           grid: { display: false },
           ticks: { font: { size: 9 } }
         }
+      },
+      animation: {
+        duration: 480,
+        easing: 'easeOutCubic'
       }
     }
   });
 
-  // Radar (KPI balance)
+  // ---- Radar ----
   const radarChart = new Chart(radarCanvas.getContext('2d'), {
     type: 'radar',
     data: {
       labels: ['KPI 1', 'KPI 2', 'KPI 3', 'KPI 4'],
       datasets: [{
-        data: [70, 55, 64, 48],
+        data: kpi,
         borderColor: '#111827',
         backgroundColor: 'rgba(17,24,39,0.07)',
         borderWidth: 1,
@@ -342,145 +343,88 @@ function initDashboardSimulated() {
       scales: {
         r: {
           angleLines: { color: 'rgba(156,163,175,0.5)' },
-          grid: { color: 'rgba(209,213,219,0.7)' },
+          grid:      { color: 'rgba(209,213,219,0.7)' },
           suggestedMin: 0,
           suggestedMax: 100,
           ticks: { display: false },
           pointLabels: { font: { size: 9 } }
         }
+      },
+      animation: {
+        duration: 480,
+        easing: 'easeOutCubic'
       }
     }
   });
 
-  // Trend line
-  const trendChart = new Chart(trendCanvas.getContext('2d'), {
-    type: 'line',
-    data: {
-      labels: trendLabels,
-      datasets: [{
-        data: trendValues,
-        tension: 0.35,
-        borderWidth: 2,
-        borderColor: '#111827',
-        pointRadius: 0,
-        fill: false
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          mode: 'index',
-          intersect: false,
-          callbacks: {
-            title: items => {
-              const idx = items[0].dataIndex;
-              const d = trendLabels[idx];
-              return d ? timeFormatter.format(d) : '';
-            },
-            label: ctx => ctx.parsed.y.toFixed(1) + ' % load'
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: {
-            maxTicksLimit: 4,
-            callback: (value, idx) => timeFormatter.format(trendLabels[idx])
-          }
-        },
-        y: {
-          grid: { color: 'rgba(209,213,219,0.7)', drawBorder: false },
-          ticks: {
-            maxTicksLimit: 3,
-            callback: v => v.toFixed(0) + ' %'
-          }
-        }
-      },
-      animation: { duration: 200 }
-    }
-  });
+  // ---- Actualizar numeritos ----
+  function updateText(now) {
+    if (loadEl)
+      loadEl.innerHTML = `${Math.round(load)}<span class="unit">% load</span>`;
+    if (prodEl)
+      prodEl.textContent = production.toFixed(1);
+    if (jobEl)
+      jobEl.textContent = jobStatus.toFixed(0) + '%';
+    if (outEl)
+      outEl.textContent = output.toFixed(1);
 
-  // Actualiza numeritos y estado
-  function updateReadouts(vLoad, vProd, vStatus, vOutput, t) {
-    if (loadEl) {
-      loadEl.innerHTML = Math.round(vLoad) +
-        '<span class="unit"> % load</span>';
-    }
-    if (prodEl) prodEl.textContent = vProd.toFixed(1);
-    if (statusEl) statusEl.textContent = vStatus.toFixed(0) + '%';
-    if (outputEl) outputEl.textContent = vOutput.toFixed(1);
-    if (gaugeValueEl) gaugeValueEl.textContent = vStatus.toFixed(0) + '%';
-    if (updatedEl) updatedEl.textContent = 'Updated: ' + timeFormatter.format(t);
+    if (updEl)
+      updEl.textContent = `Updated: ${now.toLocaleTimeString('es-ES')}`;
 
-    if (stateEl) {
+    if (statusEl) {
       let state = 'Normal';
-      if (vStatus > 85 || vLoad > 90) state = 'High load';
-      else if (vStatus < 35 || vLoad < 40) state = 'Low load';
-      stateEl.textContent = state + ' · Live simulation · 1s refresh';
+      if (jobStatus > 85 || load > 90) state = 'High load';
+      else if (jobStatus < 40 || load < 50) state = 'Low load';
+      statusEl.textContent = `${state} · Live simulation · 1s refresh`;
     }
   }
 
-  const lastTime = trendLabels[trendLabels.length - 1];
-  updateReadouts(load, production, jobStatus, output, lastTime);
+  // Inicial
+  updateText(new Date());
 
-  // Tick de simulación
+  // ---- Bucle de simulación ----
   setInterval(() => {
-    const t = new Date();
+    const now = new Date();
 
-    // random walk suave
-    production = randAround(production, 1.4);
-    jobStatus = Math.max(0, Math.min(100, randAround(jobStatus, 2.8)));
-    output = randAround(output, 1.5);
-    load = Math.max(30, Math.min(100, randAround(load, 2.0)));
+    production = clamp(randAround(production, 0.6), 40, 65);
+    jobStatus  = clamp(randAround(jobStatus, 1.2), 35, 95);
+    output     = clamp(randAround(output, 0.8), 35, 60);
+    load       = clamp(randAround(load, 0.8), 50, 95);
 
-    // actualizar tendencias
-    trendLabels.push(t);
+    demand = demand.map((v, idx) => {
+      const amp = idx === 0 ? 2.5 : 2;
+      return clamp(randAround(v, amp), 10, 100);
+    });
+
+    kpi = kpi.map(v => clamp(randAround(v, 2.5), 30, 100));
+
+    // Trend
     trendValues.push(load);
-    if (trendLabels.length > maxPoints) trendLabels.shift();
     if (trendValues.length > maxPoints) trendValues.shift();
-
-    trendChart.data.labels = trendLabels;
     trendChart.data.datasets[0].data = trendValues;
-    trendChart.update('none');
+    trendChart.update();
 
-    // gauge
-    gaugeChart.data.datasets[0].data = [jobStatus, 100 - jobStatus];
-    gaugeChart.update('none');
+    // Barras
+    barsChart.data.datasets[0].data = demand;
+    barsChart.update();
 
-    // barras
-    barsChart.data.datasets[0].data = [
-      Math.max(0, randAround(70, 5)),
-      Math.max(0, randAround(29, 4)),
-      Math.max(0, randAround(41, 4))
-    ];
-    barsChart.update('none');
+    // Radar
+    radarChart.data.datasets[0].data = kpi;
+    radarChart.update();
 
-    // radar
-    radarChart.data.datasets[0].data = [
-      Math.max(0, Math.min(100, randAround(70, 5))),
-      Math.max(0, Math.min(100, randAround(55, 6))),
-      Math.max(0, Math.min(100, randAround(64, 4))),
-      Math.max(0, Math.min(100, randAround(48, 7)))
-    ];
-    radarChart.update('none');
-
-    updateReadouts(load, production, jobStatus, output, t);
+    updateText(now);
   }, 1000);
 }
 
 // ---------- Init ----------
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.body.classList.add('js-app-ready');
+  document.body.classList.add('js-ready');
 
   initRouter();
   initScrollEffects();
   initReveal();
   initDomains();
-  initHeroParallax();
-  initDashboardSimulated();
+  initPanelParallax();
+  initDashboard();
 });
