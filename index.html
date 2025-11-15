@@ -8,8 +8,10 @@
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 <body>
+  <!-- Barra de progreso de scroll -->
   <div class="scroll-progress" id="scroll-progress"></div>
 
+  <!-- HEADER -->
   <header id="site-header">
     <div class="logo">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" aria-hidden="true">
@@ -29,9 +31,9 @@
   <main id="app">
     <!-- VIEW: HOME -->
     <section class="view" data-view="home">
-      <div class="hero reveal">
+      <section class="hero reveal">
         <div class="hero-inner">
-          <!-- Texto principal -->
+          <!-- Columna texto -->
           <div class="hero-copy">
             <h1>Automation · Robotics · Cybersecurity</h1>
             <p class="hero-sub">Industrial integration and resilience.</p>
@@ -48,85 +50,75 @@
             </div>
           </div>
 
-          <!-- Dashboard a pantalla completa -->
+          <!-- Columna panel SCADA -->
           <div class="hero-dashboard">
-            <div class="hero-monitor" id="hero-monitor">
-              <!-- Cabecera -->
-              <div class="hero-monitor-header">
+            <div class="scada-panel" id="scada-panel">
+              <!-- Cabecera del panel -->
+              <div class="scada-header">
                 <div>
-                  <div class="hero-monitor-label">Spain · Industrial OT</div>
-                  <div class="hero-monitor-sub">Live plant snapshot (demo)</div>
+                  <div class="scada-header-label">SPAIN · INDUSTRIAL OT</div>
+                  <div class="scada-header-sub">Live plant snapshot (demo)</div>
                 </div>
-                <div class="hero-monitor-value" id="metric-load">--</div>
+                <div class="scada-header-load" id="metric-load">--</div>
               </div>
 
-              <!-- Fila 1: métricas numéricas -->
-              <div class="hm-row hm-row-top">
-                <div class="hm-metric">
-                  <div class="hm-metric-label">Production</div>
-                  <div class="hm-metric-value" id="metric-production">--</div>
-                  <div class="hm-metric-unit">Units</div>
+              <!-- Fila 1: métricas -->
+              <div class="scada-row scada-row-top">
+                <div class="scada-tile scada-tile-metric">
+                  <div class="metric-label">Production</div>
+                  <div class="metric-value" id="metric-production">--</div>
+                  <div class="metric-unit">Units</div>
                 </div>
-                <div class="hm-metric">
-                  <div class="hm-metric-label">Job status</div>
-                  <div class="hm-metric-value" id="metric-status">--%</div>
-                  <div class="hm-metric-unit">R1 / R2</div>
+
+                <div class="scada-tile scada-tile-metric">
+                  <div class="metric-label">Job status</div>
+                  <div class="metric-value" id="metric-job">--%</div>
+                  <div class="metric-unit">R1 / R2</div>
                 </div>
-                <div class="hm-metric">
-                  <div class="hm-metric-label">Output</div>
-                  <div class="hm-metric-value" id="metric-output">--</div>
-                  <div class="hm-metric-unit">kW</div>
+
+                <div class="scada-tile scada-tile-metric">
+                  <div class="metric-label">Output</div>
+                  <div class="metric-value" id="metric-output">--</div>
+                  <div class="metric-unit">kW</div>
                 </div>
               </div>
 
-              <!-- Fila 2: gauge, barras, radar -->
-              <div class="hm-row hm-row-mid">
-                <!-- Gauge -->
-                <div class="hm-tile hm-tile-gauge">
-                  <div class="hm-tile-label">Utilisation</div>
-                  <div class="hm-gauge-wrapper">
-                    <canvas id="chart-gauge"></canvas>
-                    <div class="hm-gauge-center" id="gauge-value">--%</div>
-                  </div>
-                </div>
-
-                <!-- Barras -->
-                <div class="hm-tile hm-tile-bars">
-                  <div class="hm-tile-label">Demand</div>
-                  <div class="hm-chart-wrapper">
+              <!-- Fila 2: barras + radar -->
+              <div class="scada-row scada-row-mid">
+                <div class="scada-tile">
+                  <div class="tile-title">Demand</div>
+                  <div class="tile-chart">
                     <canvas id="chart-bars"></canvas>
                   </div>
                 </div>
 
-                <!-- Radar -->
-                <div class="hm-tile hm-tile-radar">
-                  <div class="hm-tile-label">KPI balance</div>
-                  <div class="hm-chart-wrapper">
+                <div class="scada-tile">
+                  <div class="tile-title">KPI balance</div>
+                  <div class="tile-chart">
                     <canvas id="chart-radar"></canvas>
                   </div>
                 </div>
               </div>
 
-              <!-- Fila 3: trend + estado -->
-              <div class="hm-row hm-row-bottom">
-                <div class="hm-tile hm-tile-trend">
-                  <div class="hm-tile-label">Analysis · Trend</div>
-                  <div class="hm-trend-body">
+              <!-- Fila 3: tendencia -->
+              <div class="scada-row scada-row-bottom">
+                <div class="scada-tile scada-tile-trend">
+                  <div class="tile-title">Analysis · Trend</div>
+                  <div class="tile-chart tile-chart-trend">
                     <canvas id="chart-trend"></canvas>
                   </div>
                 </div>
               </div>
 
-              <div class="hero-monitor-footer">
-                <span id="demand-updated">Updated: --</span>
-                <span class="hero-monitor-status" id="demand-status">
-                  Live simulation · 1s refresh
-                </span>
+              <!-- Pie del panel -->
+              <div class="scada-footer">
+                <span id="scada-updated">Updated: --</span>
+                <span id="scada-status">Live simulation · 1s refresh</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </section>
 
     <!-- VIEW: DOMAINS -->
@@ -197,6 +189,7 @@
           </div>
 
           <div class="contact-panel">
+            <!-- Formspree intacto -->
             <form action="https://formspree.io/f/xqawabvr" method="POST">
               <div>
                 <label for="name">Name / Company</label>
@@ -225,7 +218,9 @@
     © 2025 MDEI — Automation · Robotics · Cybersecurity — Barcelona (BCN)
   </footer>
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- App -->
   <script src="./assets/js/app.js"></script>
 </body>
 </html>
